@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore:
+      - '**/README.md'
+      - '**/.gitignore'
+      - '.run/**'
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+
+jobs:
+  build:
+    name: Build Gradle Plugin
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: ☕ Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          architecture: x64
+          distribution: corretto
+          java-version: '17'
+
+      - name: 🐘 Gradle Setup
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.0.0'
+          build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
+          build-scan-terms-of-use-agree: "yes"
+          build-scan-publish: false
+
+      - name: 🐘 Gradle Prepare
+        env:
+          PLUGIN_NS: 'io/syslogic'
+          PLUGIN_NAME: 'gpr-maintenance-gradle-plugin'
+          GITHUB_ACTOR: ${{ GITHUB.REPOSITORY_OWNER }}
+          GITHUB_TOKEN: ${{ SECRETS.GITHUB_TOKEN }}
+        run: |
+          mkdir build
+          chmod +x ./gradlew
+          PLUGIN_VERSION=$(cat ./gradle/libs.versions.toml | grep plugin_version | grep -Po '[\d.]+' | head -n1)
+          PACKAGE=https://maven.pkg.github.com/${{ env.GITHUB_ACTOR }}/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_NS }}/${{ env.PLUGIN_NAME }}/$PLUGIN_VERSION/${{ env.PLUGIN_NAME }}-$PLUGIN_VERSION.jar
+          if wget --user ${{ env.GITHUB_ACTOR }} --password ${{ env.GITHUB_TOKEN }} -q --method=HEAD $PACKAGE; then
+              echo "::notice::Version $PLUGIN_VERSION already published."
+              echo "PUBLISHED=true" >> "$GITHUB_ENV"
+          else
+             echo "::notice::Version $PLUGIN_VERSION not yet published."
+             echo "PUBLISHED=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: 🐘 Gradle Build Only
+        if: ${{ env.PUBLISHED == 'true' }}
+        run: |
+          gradle --no-daemon :build
+          ls -la ./build/libs | grep jar
+
+      - name: 🐘 Gradle Build & Publish
+        if: ${{ env.PUBLISHED == 'false' }}
+        env:
+          GITHUB_ACTOR: ${{ GITHUB.REPOSITORY_OWNER }}
+          GITHUB_TOKEN: ${{ SECRETS.GITHUB_TOKEN }}
+        run: |
+          gradle --no-daemon :build :publishDefaultPublicationToGitHubPackagesRepository
+          ls -la ./build/libs | grep jar
+
+      - name: 📦 Retain Artifacts (JAR)
+        id: retain-plugin-jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: gpr-maintenance-gradle-plugin
+          path: ./build/libs/*.jar
+          retention-days: 14
