@@ -1,0 +1,43 @@
+[versions]
+plugin_name             = "GPR Maintenance Plugin"
+plugin_desc             = "It manages GPR Packages through GitHub API"
+plugin_cls              = "io.syslogic.gpr.GprMaintenancePlugin"
+plugin_artifact         = "gpr-maintenance-gradle-plugin"
+plugin_id               = "io.syslogic.gpr.maintenance"
+plugin_group            = "io.syslogic"
+plugin_dev              = "Martin Zeitler"
+github_handle           = "syslogic"
+
+plugin_version          = "1.0.0"
+
+gradle_publish          = "1.3.1"
+maven_publish           = '0.34.0'
+jetbrains_dokka         = '1.9.20'
+junit                   = "5.13.4" # "6.0.0-M2"
+annotations             = "26.0.2"
+gson                    = "2.13.1"
+http_core               = "5.3.4"
+http_client             = "5.5"
+
+[plugins]
+gradle_plugin           = { id = "org.gradle.java-gradle-plugin" }
+gradle_publish          = { id = "com.gradle.plugin-publish", version.ref = "gradle_publish" }
+maven_publish           = { id = "com.vanniktech.maven.publish", version.ref = "maven_publish" }
+jetbrains_dokka         = { id = "org.jetbrains.dokka", version.ref = "jetbrains_dokka" }
+
+[libraries]
+junit_bom               = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit_platform_launcher = { module = "org.junit.platform:junit-platform-launcher" }
+junit_vintage_engine    = { module = "org.junit.vintage:junit-vintage-engine" }
+junit_jupiter_engine    = { module = "org.junit.jupiter:junit-jupiter-engine" }
+junit_jupiter_api       = { module = "org.junit.jupiter:junit-jupiter-api" }
+junit_jupiter           = { module = "org.junit.jupiter:junit-jupiter" }
+annotations             = { module = "org.jetbrains:annotations", version.ref = "annotations" }
+gson                    = { module = "com.google.code.gson:gson", version.ref = "gson" }
+http_client             = { module = "org.apache.httpcomponents.client5:httpclient5", version.ref = "http_client" }
+http_core               = { module = "org.apache.httpcomponents.core5:httpcore5", version.ref = "http_core" }
+
+[bundles]
+junit_runtime           = [ "junit_platform_launcher", "junit_vintage_engine", "junit_jupiter_engine" ]
+junit_jupiter           = [ "junit_jupiter", "junit_jupiter_api" ]
+http_client             = [ "http_core", "http_client" ]

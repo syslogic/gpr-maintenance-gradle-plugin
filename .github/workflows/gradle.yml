@@ -1,0 +1,56 @@
+name: Gradle CI
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore:
+      - '**/README.md'
+      - '**/.gitignore'
+      - '**/jitpack.yml'
+      - 'screenshots/**'
+      - '.run/**'
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+
+jobs:
+  build:
+    name: Build Gradle Plugin
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: ☕ Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          architecture: x64
+          distribution: corretto
+          java-version: '17'
+
+#      - name: 🐘 Gradle Setup
+#        uses: gradle/actions/setup-gradle@v4
+#        with:
+#          cache-encryption-key: ${{ SECRETS.GRADLE_ENCRYPTION_KEY }}
+#          cache-cleanup: always
+#          cache-disabled: true
+
+      - name: 🐘 Publish to GPR
+        env:
+          GITHUB_ACTOR: ${{ GITHUB.REPOSITORY_OWNER }}
+          GITHUB_TOKEN: ${{ SECRETS.GITHUB_TOKEN }}
+        run: |
+          chmod +x ./gradlew
+          ./gradlew --max-workers=2 :build :publish
+          ls -la ./build/libs | grep jar
+
+      - name: 📦 Retain Artifacts (JAR)
+        id: retain-plugin-jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: gpr-maintenance-gradle-plugin
+          path: ./build/libs/*.jar
+          retention-days: 14
