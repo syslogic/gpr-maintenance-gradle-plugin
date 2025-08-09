@@ -73,8 +73,8 @@ public class Package implements Serializable {
             "name=\"" + this.name + "\", " +
             "packageType=\"" + this.packageType + "\", " +
             "visibility=\"" + this.visibility + "\", " +
-            "versionCount=" + this.versionCount + ", " +
-            "url=\"" + this.url + "\"" +
+            "versionCount=" + this.versionCount + " " +
+            // "url=\"" + this.url + "\"" +
         "}";
     }
 }

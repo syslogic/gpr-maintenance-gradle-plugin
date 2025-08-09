@@ -13,9 +13,10 @@ import java.util.List;
  */
 public class GprMaintenanceTest extends BaseGradleTest {
 
+    /** Note: Module <code>:library</code> is now being called <code>:androidx-github</code>. */
     @Test
     public void testLibraryPublish() {
-        this.buildArgs = List.of(":library:publish", "--info");
+        this.buildArgs = List.of(":androidx-github:publish", "--info");
         BuildResult result = gradle(parent).withArguments(buildArgs).build();
         Assertions.assertNotNull(result);
         Assertions.assertTrue(result.getOutput().contains("BUILD SUCCESSFUL"));

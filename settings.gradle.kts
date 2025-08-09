@@ -36,3 +36,5 @@ dependencyResolutionManagement {
         mavenLocal()
     }
 }
+
+rootProject.name = "gpr-maintenance-gradle-plugin"

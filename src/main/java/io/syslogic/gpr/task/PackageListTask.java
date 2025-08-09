@@ -76,7 +76,7 @@ abstract public class PackageListTask extends BasePackageTask {
                     String result = EntityUtils.toString(httpEntity);
                     versionResponse = this.gson.fromJson(wrapResponseItems(result), VersionResponse.class);
                     for (io.syslogic.gpr.model.Version item : versionResponse.getItems()) {
-                        this.stdOut("| + " + item.getId() + " ~ " + item.getName() + " -> " + item.getUrl());
+                        this.stdOut("| + " + item.getId() + " ~ " + item.getName() + " -> " + item.getPackageHtmlUrl());
                     }
                 } else if (getLogHttp().get()) {
                     this.stdErr("HTTP " + response.getCode() + " " + response.getReasonPhrase());

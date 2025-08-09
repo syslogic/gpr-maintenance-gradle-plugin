@@ -18,12 +18,13 @@ public class Credentials {
 
     @NotNull
     public static List<String> getCredentials(@NotNull File properties) {
+        List<String> separators = List.of(" ", "|", "/");
         List<String> data = List.of("");
         if (properties.exists()) {
 
             // Attempt to parse file `token.properties`.
-            String value = readFile(properties);
-            for (String separator : List.of("|", "/", "")) {
+            String value = readFile(properties).trim();
+            for (String separator : separators) {
                 if (value.contains(separator)) {
                     data = List.of(readFile(properties).split(separator));
                     break; // for
@@ -31,7 +32,7 @@ public class Credentials {
             }
         } else if (System.getenv("GITHUB_ACTOR") != null && System.getenv("GITHUB_TOKEN") != null) {
             // Attempt to pick up GitHub environmental variables.
-            data = List.of(System.getenv("GITHUB_ACTOR"), System.getenv("GITHUB_TOKEN"));
+            data = List.of(System.getenv("GITHUB_ACTOR").trim(), System.getenv("GITHUB_TOKEN").trim());
         } else {
             stdErr("*** File `token.properties` missing:" + properties.getAbsolutePath());
             stdErr("*** `$GITHUB_ACTOR` and `$GITHUB_TOKEN` also not present");

@@ -94,7 +94,8 @@ class GprMaintenancePlugin implements Plugin<Project> {
                 this.registerPackageDeleteTask(it.getTasks(), Constants.PACKAGE_DELETE_TASK + this.versionId);
                 this.registerPackageGetTask(it.getTasks(), Constants.PACKAGE_GET_TASK + this.versionId);
             } else {
-                // It is unclear where to get the ID to restore from.
+                // It is unclear where to get the package/version ID to restore from.
+                // Would need to create a file with the deleted ID and register the task, when file exists.
                 // this.registerPackageRestoreTask(it.getTasks(), Constants.PACKAGE_RESTORE_TASK);
             }
         });
@@ -130,6 +131,8 @@ class GprMaintenancePlugin implements Plugin<Project> {
                     }
                 } else if (response.getCode() == HttpStatus.SC_NOT_FOUND) {
                     this.stdOut("> [GPR] package " + packageName + " not found.");
+                } else if (response.getCode() == HttpStatus.SC_UNAUTHORIZED) {
+                    this.stdErr("> [GPR] check the login credentials.");
                 } else if (this.logHttp) {
                     this.stdErr("HTTP " + response.getCode() + " " + response.getReasonPhrase());
                 }
