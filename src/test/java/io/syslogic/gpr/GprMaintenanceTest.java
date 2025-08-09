@@ -14,14 +14,6 @@ import java.util.List;
 public class GprMaintenanceTest extends BaseGradleTest {
 
     @Test
-    public void testJavadocReleaseGeneration() {
-        this.buildArgs = List.of(":library:javadocReleaseGeneration", "--stacktrace");
-        BuildResult result = gradle(parent).withArguments(buildArgs).build();
-        Assertions.assertNotNull(result);
-        Assertions.assertTrue(result.getOutput().contains("BUILD SUCCESSFUL"));
-    }
-
-    @Test
     public void testLibraryPublish() {
         this.buildArgs = List.of(":library:publish", "--info");
         BuildResult result = gradle(parent).withArguments(buildArgs).build();

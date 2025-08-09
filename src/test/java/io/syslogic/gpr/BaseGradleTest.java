@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Abstract Base Gradle Test
+ * Abstract Gradle Test
  * @author Martin Zeitler
  */
 abstract public class BaseGradleTest {

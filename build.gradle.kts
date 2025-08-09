@@ -3,19 +3,18 @@ plugins {
     alias(buildSrc.plugins.maven.publish)
     alias(buildSrc.plugins.gradle.plugin)
     alias(buildSrc.plugins.gradle.publish)
-    alias(buildSrc.plugins.jetbrains.dokka)
 }
+group = "${buildSrc.versions.plugin.group.get()}"
+version = "${buildSrc.versions.plugin.version.get()}"
 
 // Loading common strings from version-catalog.
 project.ext.set("github_handle",  buildSrc.versions.github.handle.get())
 project.ext.set("artifact_id",    buildSrc.versions.plugin.artifact.get())
-project.ext.set("group_id",       buildSrc.versions.plugin.group.get())
 project.ext.set("plugin_id",      buildSrc.versions.plugin.id.get())
 project.ext.set("plugin_class",   buildSrc.versions.plugin.cls.get())
 project.ext.set("plugin_dev",     buildSrc.versions.plugin.dev.get())
 project.ext.set("plugin_name",    buildSrc.versions.plugin.name.get())
 project.ext.set("plugin_desc",    buildSrc.versions.plugin.desc.get())
-project.ext.set("plugin_version", buildSrc.versions.plugin.version.get())
 
 dependencies {
     api(gradleApi())
@@ -49,7 +48,7 @@ tasks.withType<Test>().configureEach {
 
 tasks.withType<Jar>().configureEach {
     archiveBaseName.set("${project.ext.get("artifact_id")}")
-    archiveVersion.set("${project.ext.get("plugin_version")}")
+    archiveVersion.set(version as String)
 }
 
 // Gradle 9.0 deprecation fix
@@ -59,7 +58,7 @@ val implCls: Configuration by configurations.creating {
 }
 
 val javadocs by tasks.registering(Javadoc::class) {
-    title = "${project.ext.get("plugin_name")} ${project.ext.get("plugin_version")} API"
+    title = "${project.ext.get("plugin_name")} $version API"
     classpath += implCls.asFileTree.filter {it.extension == "jar"}
     destinationDir = rootProject.file("build/javadoc")
     source = sourceSets.main.get().allJava
@@ -80,14 +79,6 @@ val sourcesJar by tasks.registering(Jar::class) {
     from(sourceSets.main.get().java.srcDirs)
 }
 
-group = "${project.ext.get("group_id")}"
-version = "${project.ext.get("plugin_version")}"
-
-artifacts {
-    archives(javadocJar)
-    archives(sourcesJar)
-}
-
 configure<PublishingExtension> {
     repositories {
         maven {
@@ -103,18 +94,21 @@ configure<PublishingExtension> {
     publications {
         register<MavenPublication>("Maven") {
             from(components.getByName("java"))
-            groupId = "${project.ext.get("group_id")}"
+            groupId = group as String
             artifactId = "${project.ext.get("artifact_id")}"
-            version = "${project.ext.get("plugin_version")}"
+            version = version
+            artifacts {
+                archives(javadocJar)
+                archives(sourcesJar)
+            }
             pom {
                 name = "${project.ext.get("plugin_name")}"
                 description = "${project.ext.get("plugin_desc")}"
                 url = "https://github.com/${project.ext.get("github_handle")}/${project.ext.get("artifact_id")}"
-                developers {
-                    developer {
-                        id = "${project.ext.get("github_handle")}"
-                        email = "${project.ext.get("github_handle")}@users.noreply.github.com"
-                        name = "${project.ext.get("plugin_dev")}"
+                licenses {
+                    license {
+                        name = "MIT License"
+                        url = "http://www.opensource.org/licenses/mit-license.php"
                     }
                 }
                 scm {
@@ -122,10 +116,11 @@ configure<PublishingExtension> {
                     developerConnection = "scm:git:ssh://github.com/${project.ext.get("github_handle")}/${project.ext.get("artifact_id")}.git"
                     url = "https://github.com/${project.ext.get("github_handle")}/${project.ext.get("artifact_id")}/"
                 }
-                licenses {
-                    license {
-                        name = "MIT License"
-                        url = "http://www.opensource.org/licenses/mit-license.php"
+                developers {
+                    developer {
+                        id = "${project.ext.get("github_handle")}"
+                        email = "${project.ext.get("github_handle")}@users.noreply.github.com"
+                        name = "${project.ext.get("plugin_dev")}"
                     }
                 }
             }

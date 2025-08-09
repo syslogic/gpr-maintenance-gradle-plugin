@@ -50,9 +50,18 @@ public class Constants {
         return Constants.GITHUB_API_BASE_URL + "user/packages/" + packageType + "/" + packageName ;
     }
 
-    @NotNull public static final String VERSION_ID_TASK = "gprVersionId";
-    @NotNull public static final String PACKAGE_LIST_TASK = "gprPackageList";
+    /** Task name: ID. */
+    @NotNull public static final String VERSION_ID_TASK      = "gprVersionId";
+
+    /** Task name: GET. */
+    @NotNull public static final String PACKAGE_GET_TASK     = "gprPackageGet_";
+
+    /** Task name: DELETED. */
+    @NotNull public static final String PACKAGE_DELETE_TASK  = "gprPackageDel_";
+
+    /** Task name: LIST. */
+    @NotNull public static final String PACKAGE_LIST_TASK    = "gprPackageList";
+
+    /** Task name: RESTORE. */
     @NotNull public static final String PACKAGE_RESTORE_TASK = "gprPackageRestore";
-    @NotNull public static final String PACKAGE_GET_TASK = "gprPackageGet_";
-    @NotNull public static final String PACKAGE_DELETE_TASK = "gprPackageDel_";
 }

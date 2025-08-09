@@ -31,12 +31,12 @@ jobs:
           distribution: corretto
           java-version: '17'
 
-#      - name: 🐘 Gradle Setup
-#        uses: gradle/actions/setup-gradle@v4
-#        with:
-#          cache-encryption-key: ${{ SECRETS.GRADLE_ENCRYPTION_KEY }}
-#          cache-cleanup: always
-#          cache-disabled: true
+      - name: 🐘 Gradle Setup
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-encryption-key: ${{ SECRETS.GRADLE_ENCRYPTION_KEY }}
+          cache-cleanup: always
+          # cache-disabled: true
 
       - name: 🐘 Publish to GPR
         env:
@@ -44,7 +44,7 @@ jobs:
           GITHUB_TOKEN: ${{ SECRETS.GITHUB_TOKEN }}
         run: |
           chmod +x ./gradlew
-          ./gradlew --max-workers=2 :build :publish
+          ./gradlew --max-workers=2 --continue :build :publish
           ls -la ./build/libs | grep jar
 
       - name: 📦 Retain Artifacts (JAR)
