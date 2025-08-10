@@ -40,6 +40,7 @@ class GprMaintenancePlugin implements Plugin<Project> {
     @NotNull private final String extName = "gpr";
     @Nullable private File tokenProperties = null;
     @NotNull private Boolean listPackagesAfterPublish = false;
+    @NotNull private Boolean deleteOnConflict = true;
     @NotNull private Boolean deleteLastVersion = false;
     @NotNull private Boolean logHttp = false;
     @Nullable private String groupId = null;
@@ -63,14 +64,16 @@ class GprMaintenancePlugin implements Plugin<Project> {
             /* Using the groupId & version of the project. */
             this.groupId = it.getGroup().toString();
             this.versionName = it.getVersion().toString();
-
             this.packageType = extension.getPackageType();
-            this.packageName = it.getGroup() + "." + extension.getPackageName();
 
+            if (extension.getPackageName() != null) {
+                this.packageName = it.getGroup() + "." + extension.getPackageName();
+            }
+
+            /* Token Properties. */
             if (extension.getTokenProperties() != null) {
                 this.tokenProperties = new File(extension.getTokenProperties());
             }
-
             if (this.tokenProperties == null || ! this.tokenProperties.exists()) {
                 this.tokenProperties = project.file("../buildSrc/token.properties");
                 if (!this.tokenProperties.exists()) {
@@ -78,8 +81,10 @@ class GprMaintenancePlugin implements Plugin<Project> {
                 }
             }
 
-            this.listPackagesAfterPublish = extension.getListPackagesAfterPublish();
+            /* Interop. */
+            this.deleteOnConflict = extension.getDeleteOnConflict();
             this.deleteLastVersion = extension.getDeleteLastVersion();
+            this.listPackagesAfterPublish = extension.getListPackagesAfterPublish();
             this.logHttp = extension.getLogHttp();
 
             /* HTTP: Translate versionName to versionId. */
@@ -93,11 +98,11 @@ class GprMaintenancePlugin implements Plugin<Project> {
             if (versionId > 0L) {
                 this.registerPackageDeleteTask(it.getTasks(), Constants.PACKAGE_DELETE_TASK + this.versionId);
                 this.registerPackageGetTask(it.getTasks(), Constants.PACKAGE_GET_TASK + this.versionId);
-            } else {
+            } // else {
                 // It is unclear where to get the package/version ID to restore from.
                 // Would need to create a file with the deleted ID and register the task, when file exists.
                 // this.registerPackageRestoreTask(it.getTasks(), Constants.PACKAGE_RESTORE_TASK);
-            }
+            // }
         });
     }
 
@@ -213,8 +218,10 @@ class GprMaintenancePlugin implements Plugin<Project> {
                 task.getLogHttp().set(logHttp);
             });
 
-            /* Delete the package upon publish. */
-            if (this.deleteLastVersion) {
+            /* Delete the package upon conflict. */
+            if (this.deleteOnConflict) {
+
+                // TODO: this only works for :publish, but not for publishMavenPublicationToGitHubPackagesRepository.
                 tasks.getByName("publish").dependsOn(taskName);
             }
         }

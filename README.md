@@ -73,15 +73,17 @@ When running in GitHub workflow, one has to pass environmental variables, which 
 The `GprMaintenanceExtension` can be configured with the following properties:
 
 - `tokenProperties`: The absolute path to the `token.properties` file.
-- `listPackagesAfterPublish`: List all Maven packages after publish: true/false.
+- `deleteOnConflict`: Delete conflicting package version upon publish: true/false.
 - `deleteLastVersion`: Delete package, when deleting the last version fails: true/false.
+- `listPackagesAfterPublish`: List all Maven packages after publish: true/false.
 - `logHttp`: HTTP logging: true/false.
 
 ````groovy
 gpr {
     tokenProperties = rootProject.file("token.properties").absolutePath
-    listPackagesAfterPublish = true
+    deleteOnConflict = true
     deleteLastVersion = true
+    listPackagesAfterPublish = true
     logHttp = false
 }
 ````
@@ -89,8 +91,9 @@ gpr {
 ````kotlin
 configure<GprMaintenanceExtension> {
     tokenProperties = rootProject.file("token.properties").absolutePath
-    listPackagesAfterPublish = true
+    deleteOnConflict = true
     deleteLastVersion = true
+    listPackagesAfterPublish = true
     logHttp = false
 }
 ````

@@ -16,8 +16,9 @@ public class GprMaintenanceExtension implements GprMaintenance {
     String versionName = null;
 
     String tokenProperties = null;
-    Boolean listPackagesAfterPublish = false;
+    Boolean deleteOnConflict = false;
     Boolean deleteLastVersion = false;
+    Boolean listPackagesAfterPublish = false;
     Boolean logHttp = false;
 
     /**
@@ -58,6 +59,11 @@ public class GprMaintenanceExtension implements GprMaintenance {
     @Override
     public void setListPackagesAfterPublish(Boolean value) {
         this.listPackagesAfterPublish = value;
+    }
+
+    @Override
+    public void setDeleteOnConflict(Boolean value) {
+        this.deleteOnConflict = value;
     }
 
     /**
@@ -130,6 +136,11 @@ public class GprMaintenanceExtension implements GprMaintenance {
     @Override
     public Boolean getListPackagesAfterPublish() {
         return this.listPackagesAfterPublish;
+    }
+
+    @Override
+    public Boolean getDeleteOnConflict() {
+        return this.deleteOnConflict;
     }
 
     @Override

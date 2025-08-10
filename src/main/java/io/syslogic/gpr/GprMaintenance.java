@@ -57,6 +57,13 @@ public interface GprMaintenance {
     Boolean getListPackagesAfterPublish();
 
     /**
+     * Delete On Conflict
+     * <code>gpr { deleteOnConflict = true }</code>
+     * @return deleteOnConflict true/false.
+     */
+    Boolean getDeleteOnConflict();
+
+    /**
      * Delete Last Version
      * <code>gpr { deleteLastVersion = true }</code>
      * @return deleteLastVersion true/false.
@@ -89,6 +96,12 @@ public interface GprMaintenance {
      * @param value true/false.
      */
     void setListPackagesAfterPublish(Boolean value);
+
+    /**
+     * Set Delete On Conflict.
+     * @param value true/false.
+     */
+    void setDeleteOnConflict(Boolean value);
 
     /**
      * Set Delete Last Version.

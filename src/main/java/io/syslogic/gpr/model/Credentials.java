@@ -21,7 +21,6 @@ public class Credentials {
         List<String> separators = List.of(" ", "|", "/");
         List<String> data = List.of("");
         if (properties.exists()) {
-
             // Attempt to parse file `token.properties`.
             String value = readFile(properties).trim();
             for (String separator : separators) {
