@@ -92,8 +92,8 @@ configure<PublishingExtension> {
     }
 
     publications {
-        register<MavenPublication>("Maven") {
-            from(components.getByName("java"))
+        create<MavenPublication>("Plugin") {
+            from(components["java"])
             groupId = group as String
             artifactId = "${project.ext.get("artifact_id")}"
             version = version

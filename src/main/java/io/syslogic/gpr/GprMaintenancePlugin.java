@@ -32,7 +32,8 @@ import io.syslogic.gpr.task.VersionIdTask;
  * GitHub Package Registry: Maintenance Plugin
  * @author Martin Zeitler
  */
-@SuppressWarnings({"unused"})
+@SuppressWarnings({"unused", "NewApi"})
+
 class GprMaintenancePlugin implements Plugin<Project> {
     @NotNull private final String taskGroup = "publishing";
     @NotNull private String packageType = "maven";
@@ -91,17 +92,17 @@ class GprMaintenancePlugin implements Plugin<Project> {
             this.updateVersionId(project, this.packageName);
 
             /* Always register the list task. */
-            this.registerPackageListTask(it.getTasks(), Constants.PACKAGE_LIST_TASK);
-            this.registerVersionIdTask(it.getTasks(), Constants.VERSION_ID_TASK);
+            this.registerPackageListTask(it);
+            this.registerVersionIdTask(it);
 
             /* Register get & delete tasks, when a versionId is known. */
             if (versionId > 0L) {
-                this.registerPackageDeleteTask(it.getTasks(), Constants.PACKAGE_DELETE_TASK + this.versionId);
-                this.registerPackageGetTask(it.getTasks(), Constants.PACKAGE_GET_TASK + this.versionId);
+                this.registerPackageDeleteTask(it, Constants.PACKAGE_DELETE_TASK + this.versionId);
+                this.registerPackageGetTask(it, Constants.PACKAGE_GET_TASK + this.versionId);
             } // else {
-                // It is unclear where to get the package/version ID to restore from.
+                // It is still unclear, where to get the package/version ID to restore from.
                 // Would need to create a file with the deleted ID and register the task, when file exists.
-                // this.registerPackageRestoreTask(it.getTasks(), Constants.PACKAGE_RESTORE_TASK);
+                // this.registerPackageRestoreTask(it, Constants.PACKAGE_RESTORE_TASK);
             // }
         });
     }
@@ -148,11 +149,27 @@ class GprMaintenancePlugin implements Plugin<Project> {
         }
     }
 
+    /** Add dependencies to publication tasks. */
+    void addTaskDependency(@NotNull Project project, @Nullable String dependsOn, @Nullable String finalizedBy) {
+        project.afterEvaluate( it ->
+                it.getTasks().stream().filter(item -> item.getName().matches(Constants.PUBLISH_TASK_PATTERN)).forEach( task -> {
+                    if (dependsOn != null) {
+                        stdOut(":" + task.getName() + " depends on :" + dependsOn);
+                        task.dependsOn(dependsOn);
+                    }
+                    if (finalizedBy != null) {
+                        stdOut(":" + task.getName() + " finalized by :" + finalizedBy);
+                        task.finalizedBy(finalizedBy);
+                    }
+                })
+        );
+    }
+
     /** The {@link PackageListTask} lists packages and their versions. */
-    @SuppressWarnings("SameParameterValue")
-    void registerPackageListTask(@NotNull TaskContainer tasks, @NotNull String taskName) {
-        if (tasks.findByName(taskName) == null) {
-            tasks.register(taskName, PackageListTask.class, task -> {
+    void registerPackageListTask(@NotNull Project project) {
+        TaskContainer tasks = project.getTasks();
+        if (tasks.findByName(Constants.PACKAGE_LIST_TASK) == null) {
+            tasks.register(Constants.PACKAGE_LIST_TASK, PackageListTask.class, task -> {
                 task.setGroup(taskGroup);
                 task.getGroupId().set(groupId);
                 task.getPackageType().set(packageType);
@@ -161,18 +178,18 @@ class GprMaintenancePlugin implements Plugin<Project> {
                 task.getLogHttp().set(logHttp);
             });
 
-            /* List all packages after publish. */
+            /* List all packages  after :publish. */
             if (this.listPackagesAfterPublish) {
-                tasks.getByName("publish").finalizedBy(taskName);
+                this.addTaskDependency(project, null, Constants.PACKAGE_LIST_TASK);
             }
         }
     }
 
     /** The {@link VersionIdTask} updates the extension package versionId. */
-    @SuppressWarnings("SameParameterValue")
-    void registerVersionIdTask(@NotNull TaskContainer tasks, @NotNull String taskName) {
-        if (tasks.findByName(taskName) == null) {
-            tasks.register(taskName, VersionIdTask.class, task -> {
+    void registerVersionIdTask(@NotNull Project project) {
+        TaskContainer tasks = project.getTasks();
+        if (tasks.findByName(Constants.VERSION_ID_TASK) == null) {
+            tasks.register(Constants.VERSION_ID_TASK, VersionIdTask.class, task -> {
                 task.setGroup(taskGroup);
                 task.getGroupId().set(groupId);
                 task.getPackageType().set(packageType);
@@ -181,14 +198,14 @@ class GprMaintenancePlugin implements Plugin<Project> {
                 task.getLogHttp().set(logHttp);
             });
 
-            /* Always run after publish. */
-            tasks.getByName("publish").finalizedBy(taskName);
+            /* Always update the versionId after :publish. */
+            this.addTaskDependency(project, null, Constants.VERSION_ID_TASK);
         }
     }
 
     /** The {@link PackageGetTask} gets a package. */
-    @SuppressWarnings("SameParameterValue")
-    void registerPackageGetTask(@NotNull TaskContainer tasks, @NotNull String taskName) {
+    void registerPackageGetTask(@NotNull Project project, @NotNull String taskName) {
+        TaskContainer tasks = project.getTasks();
         if (tasks.findByName(taskName) == null) {
             tasks.register(taskName, PackageGetTask.class, task -> {
                 task.setGroup(taskGroup);
@@ -203,8 +220,8 @@ class GprMaintenancePlugin implements Plugin<Project> {
     }
 
     /** The {@link PackageDeleteTask} deletes a package. */
-    @SuppressWarnings("SameParameterValue")
-    void registerPackageDeleteTask(@NotNull TaskContainer tasks, @NotNull String taskName) {
+    void registerPackageDeleteTask(@NotNull Project project, @NotNull String taskName) {
+        TaskContainer tasks = project.getTasks();
         if (tasks.findByName(taskName) == null) {
             tasks.register(taskName, PackageDeleteTask.class, task -> {
                 task.setGroup(taskGroup);
@@ -220,16 +237,14 @@ class GprMaintenancePlugin implements Plugin<Project> {
 
             /* Delete the package upon conflict. */
             if (this.deleteOnConflict) {
-
-                // TODO: this only works for :publish, but not for publishMavenPublicationToGitHubPackagesRepository.
-                tasks.getByName("publish").dependsOn(taskName);
+                addTaskDependency(project, taskName, null);
             }
         }
     }
 
     /** The {@link PackageRestoreTask} restores a package. */
-    @SuppressWarnings("SameParameterValue")
-    void registerPackageRestoreTask(@NotNull TaskContainer tasks, @NotNull String taskName) {
+    void registerPackageRestoreTask(@NotNull Project project, @NotNull String taskName) {
+        TaskContainer tasks = project.getTasks();
         if (tasks.findByName(taskName) == null) {
             tasks.register(taskName, PackageRestoreTask.class, task -> {
                 task.setGroup(taskGroup);
@@ -243,9 +258,12 @@ class GprMaintenancePlugin implements Plugin<Project> {
         }
     }
 
+    /** <b>Utility</b> Wrapping the JSON response with an array called <code>items</code>, in order to parse it. */
     @NotNull
-    private GprMaintenance applyExtension(@NotNull Project project) {
-        return project.getExtensions().create(this.extName, GprMaintenanceExtension.class);
+    protected String wrapResponseItems(@NotNull String response) {
+        if (! response.startsWith("[") && ! response.endsWith("]")) {response = "[" + response + "]";}
+        response = "{\"items\": " + response + "}";
+        return response;
     }
 
     private void applyMavenPublish(@NotNull Project project) {
@@ -254,12 +272,10 @@ class GprMaintenancePlugin implements Plugin<Project> {
         }
     }
 
-    /** <b>Utility</b> Wrapping the JSON response with an array called <code>items</code>, in order to parse it. */
     @NotNull
-    protected String wrapResponseItems(@NotNull String response) {
-        if (! response.startsWith("[") && ! response.endsWith("]")) {response = "[" + response + "]";}
-        response = "{\"items\": " + response + "}";
-        return response;
+    private GprMaintenance applyExtension(@NotNull Project project) {
+        return project.getExtensions()
+                .create(this.extName, GprMaintenanceExtension.class);
     }
 
     /** Printing logs to <code>stdout</code>. */

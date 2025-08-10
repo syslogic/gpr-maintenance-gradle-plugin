@@ -50,6 +50,7 @@ public class Constants {
         return Constants.GITHUB_API_BASE_URL + "user/packages/" + packageType + "/" + packageName ;
     }
 
+    @NotNull public static final String PUBLISH_TASK_PATTERN = "^publish(?!AllPublications).*(?<!MavenLocal|publish)$";
     /** Task name: ID. */
     @NotNull public static final String VERSION_ID_TASK      = "gprVersionId";
 

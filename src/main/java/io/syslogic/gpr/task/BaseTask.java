@@ -26,9 +26,7 @@ import io.syslogic.gpr.model.Credentials;
  * @author Martin Zeitler
  */
 abstract public class BaseTask extends DefaultTask {
-    @Internal
     String clientId = null;
-    @Internal
     String clientSecret = null;
     HttpClient client;
     Gson gson = null;
