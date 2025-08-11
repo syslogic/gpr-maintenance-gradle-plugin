@@ -100,7 +100,8 @@ class GprMaintenancePlugin implements Plugin<Project> {
             } // else {
                 // It is still unclear, where to get the package/version ID to restore from.
                 // Would need to create a file with the deleted ID and register the task, when file exists.
-                // this.registerPackageRestoreTask(it, Constants.PACKAGE_RESTORE_TASK);
+                // Long oldVersionId = 0
+                // this.registerPackageRestoreTask(it, Constants.PACKAGE_RESTORE_TASK + oldVersionId);
             // }
         });
     }

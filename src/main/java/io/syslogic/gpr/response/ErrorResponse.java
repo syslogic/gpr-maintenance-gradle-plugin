@@ -10,12 +10,15 @@ import java.io.Serializable;
  */
 public class ErrorResponse implements Serializable {
 
+    /** Error Message. */
     @SerializedName("message")
     private String message;
 
+    /** Link to Documentation URL. */
     @SerializedName("documentation_url")
     private String documentationUrl;
 
+    /** Status Code. */
     @SerializedName("status")
     private Integer status;
 

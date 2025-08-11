@@ -2,7 +2,6 @@ name: Gradle CI
 
 on:
   push:
-    branches: [ master ]
     paths-ignore:
       - '**/README.md'
       - '**/.gitignore'
@@ -31,15 +30,15 @@ jobs:
           distribution: corretto
           java-version: '17'
 
+      - name: 🐘 Configure Build
+        run: chmod +x ./gradlew
+
       - name: 🐘 Gradle Setup
         uses: gradle/actions/setup-gradle@v4
         with:
           cache-encryption-key: ${{ SECRETS.GRADLE_ENCRYPTION_KEY }}
           cache-cleanup: always
           # cache-disabled: true
-
-      - name: 🐘 Configure Build
-        run: chmod +x ./gradlew
 
       - name: 🐘 Publish JAR to GPR
         env:

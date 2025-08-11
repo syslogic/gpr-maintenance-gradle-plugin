@@ -30,6 +30,8 @@ public class HttpClientImpl {
 
     /**
      * PoolingHttpClientConnectionManager is required for subsequent requests.
+     * @param project the Gradle project the plugin had been applied to.
+     * @param logHttp log HTTP requests to console true/false.
      * @return instance of {@link HttpClient}.
      */
     @NotNull
@@ -53,6 +55,12 @@ public class HttpClientImpl {
         return cb.build();
     }
 
+    /**
+     * PoolingHttpClientConnectionManager is required for subsequent requests.
+     * @param kilobytes kilobytes transferred.
+     * @param ms the transfer duration.
+     * @return string formatted transfer rate.
+     */
     @NotNull
     String getTransferRate(long kilobytes, long ms) {
         long rate = kilobytes / (ms / 1000) * 1024; // bytes per second
@@ -62,10 +70,18 @@ public class HttpClientImpl {
         return String.format(Locale.ROOT, "%.1f %cB", rate/1024f, " kMGTPE".charAt(u))+ "/s";
     }
 
+    /**
+     * Log to <code>stdout</code>.
+     * @param value the string to log.
+     */
     protected static void stdOut(@NotNull String value) {
         System.out.println(value);
     }
 
+    /**
+     * Log to <code>stderr</code>.
+     * @param value the string to log.
+     */
     protected static void stdErr(@NotNull String value) {
         System.err.println(value);
     }

@@ -77,12 +77,32 @@ public interface GprMaintenance {
      */
     void setTokenProperties(String value);
 
+    /**
+     * Package Type.
+     * <code>gpr {packageType = "maven"}</code>
+     * @param value the type of package.
+     */
     void setPackageType(String value);
 
+    /**
+     * Package GroupId.
+     * <code>gpr {groudId = "io.syslogic"}</code>
+     * @param value the group of package.
+     */
     void setGroupId(String value);
 
+    /**
+     * Package Name.
+     * <code>gpr {packageName = ""}</code>
+     * @param value the name of package.
+     */
     void setPackageName(String value);
 
+    /**
+     * Package Version Name.
+     * <code>gpr {versionName = ""}</code>
+     * @param value the version of package.
+     */
     void setVersionName(String value);
 
     /**

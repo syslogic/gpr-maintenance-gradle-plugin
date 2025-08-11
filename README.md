@@ -40,7 +40,7 @@ buildscript {
 Or in version-catalog `gradle/libs.versions.toml`:
 ````toml
 [versions]
-gpr_maintenance_plugin = "1.0.5"
+gpr_maintenance_plugin = "1.0.7"
 
 [plugins]
 gpr_maintenance = { id = "io.syslogic.gpr.maintenance", version.ref = "gpr_maintenance_plugin" }

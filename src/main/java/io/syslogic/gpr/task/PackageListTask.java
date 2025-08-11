@@ -27,7 +27,11 @@ abstract public class PackageListTask extends BasePackageTask {
         }
     }
 
-    /** List all packages of the authenticated user and the versions. */
+    /**
+     * List all packages of the authenticated user and the versions.
+     * TODO: pagination support?
+     * @param pageSize the page-size for the request.
+     */
     public void getPackages(int pageSize) {
         String uri = Constants.USER_PACKAGES + "?package_type=" + getPackageType().get() + "&per_page=" + pageSize;
         if (getLogHttp().get()) {
