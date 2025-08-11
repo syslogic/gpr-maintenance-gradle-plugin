@@ -51,6 +51,9 @@ public class Constants {
     }
 
     @NotNull public static final String PUBLISH_TASK_PATTERN = "^publish(?!AllPublications).*(?<!MavenLocal|publish)$";
+
+    @NotNull public static final String EXTENSION_NAME = "gpr";
+
     /** Task name: ID. */
     @NotNull public static final String VERSION_ID_TASK      = "gprVersionId";
 

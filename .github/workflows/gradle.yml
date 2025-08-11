@@ -38,13 +38,15 @@ jobs:
           cache-cleanup: always
           # cache-disabled: true
 
-      - name: 🐘 Publish to GPR
+      - name: 🐘 Configure Build
+        run: chmod +x ./gradlew
+
+      - name: 🐘 Publish JAR to GPR
         env:
           GITHUB_ACTOR: ${{ GITHUB.REPOSITORY_OWNER }}
           GITHUB_TOKEN: ${{ SECRETS.GITHUB_TOKEN }}
         run: |
-          chmod +x ./gradlew
-          ./gradlew --max-workers=2 --continue :build :publish
+          ./gradlew --max-workers=2 :publish
           ls -la ./build/libs | grep jar
 
       - name: 📦 Retain Artifacts (JAR)

@@ -1,20 +1,28 @@
 // :buildSrc
 plugins {
-    alias(buildSrc.plugins.maven.publish)
     alias(buildSrc.plugins.gradle.plugin)
-    alias(buildSrc.plugins.gradle.publish)
+    alias(buildSrc.plugins.maven.publish)
 }
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
 group = "${buildSrc.versions.plugin.group.get()}"
 version = "${buildSrc.versions.plugin.version.get()}"
 
-// Loading common strings from version-catalog.
-project.ext.set("github_handle",  buildSrc.versions.github.handle.get())
-project.ext.set("artifact_id",    buildSrc.versions.plugin.artifact.get())
-project.ext.set("plugin_id",      buildSrc.versions.plugin.id.get())
-project.ext.set("plugin_class",   buildSrc.versions.plugin.cls.get())
-project.ext.set("plugin_dev",     buildSrc.versions.plugin.dev.get())
-project.ext.set("plugin_name",    buildSrc.versions.plugin.name.get())
-project.ext.set("plugin_desc",    buildSrc.versions.plugin.desc.get())
+val pluginId: String by extra(buildSrc.versions.plugin.id.get())
+val pluginCls: String by extra(buildSrc.versions.plugin.cls.get())
+val pluginGroup: String by extra(buildSrc.versions.plugin.group.get())
+val pluginVersion: String by extra(buildSrc.versions.plugin.version.get())
+val pluginName: String by extra(buildSrc.versions.plugin.name.get())
+val pluginDesc: String by extra(buildSrc.versions.plugin.desc.get())
+val pluginIdentifier: String by extra(buildSrc.versions.plugin.identifier.get())
+val githubHandle: String by extra(buildSrc.versions.github.handle.get())
+val githubEmail: String by extra(buildSrc.versions.github.email.get())
+val githubDev: String by extra(buildSrc.versions.github.dev.get())
 
 dependencies {
     api(gradleApi())
@@ -34,10 +42,10 @@ dependencies {
 gradlePlugin {
     plugins {
         create("GprMaintenancePlugin") {
-            id = "${project.ext.get("plugin_id")}"
-            implementationClass = "${project.ext.get("plugin_class")}"
-            displayName = "${project.ext.get("plugin_name")}"
-            description = "${project.ext.get("plugin_desc")}"
+            id = pluginId
+            implementationClass = pluginCls
+            displayName = pluginName
+            description = pluginDesc
         }
     }
 }
@@ -47,8 +55,8 @@ tasks.withType<Test>().configureEach {
 }
 
 tasks.withType<Jar>().configureEach {
-    archiveBaseName.set("${project.ext.get("artifact_id")}")
-    archiveVersion.set(version as String)
+    archiveBaseName.set("${pluginIdentifier}-${pluginVersion}")
+    archiveVersion.set(pluginVersion)
 }
 
 // Gradle 9.0 deprecation fix
@@ -58,7 +66,7 @@ val implCls: Configuration by configurations.creating {
 }
 
 val javadocs by tasks.registering(Javadoc::class) {
-    title = "${project.ext.get("plugin_name")} $version API"
+    title = "$pluginName $version API"
     classpath += implCls.asFileTree.filter {it.extension == "jar"}
     destinationDir = rootProject.file("build/javadoc")
     source = sourceSets.main.get().allJava
@@ -69,42 +77,45 @@ val javadocs by tasks.registering(Javadoc::class) {
 }
 
 val javadocJar by tasks.registering(Jar::class) {
-    archiveClassifier.set("javadoc")
     from(rootProject.file("build/javadoc"))
+    archiveClassifier.set("javadoc")
     dependsOn(javadocs)
 }
 
 val sourcesJar by tasks.registering(Jar::class) {
-    archiveClassifier.set("sources")
     from(sourceSets.main.get().java.srcDirs)
+    archiveClassifier.set("sources")
+}
+
+artifacts {
+    archives(javadocJar)
+    archives(sourcesJar)
 }
 
 configure<PublishingExtension> {
     repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/${project.ext.get("github_handle")}/${project.ext.get("artifact_id")}")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
+        if (System.getenv("GITHUB_ACTOR") != null && System.getenv("GITHUB_TOKEN") != null) {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/${githubHandle}/${pluginIdentifier}")
+                credentials {
+                    username = System.getenv("GITHUB_ACTOR")
+                    password = System.getenv("GITHUB_TOKEN")
+                }
             }
         }
     }
-
     publications {
         create<MavenPublication>("Plugin") {
             from(components["java"])
-            groupId = group as String
-            artifactId = "${project.ext.get("artifact_id")}"
-            version = version
-            artifacts {
-                archives(javadocJar)
-                archives(sourcesJar)
-            }
+            groupId = pluginGroup
+            artifactId = pluginIdentifier
+            version = pluginVersion
+
             pom {
-                name = "${project.ext.get("plugin_name")}"
-                description = "${project.ext.get("plugin_desc")}"
-                url = "https://github.com/${project.ext.get("github_handle")}/${project.ext.get("artifact_id")}"
+                name = pluginName
+                description = pluginDesc
+                url = "https://github.com/${githubHandle}/${pluginIdentifier}"
                 licenses {
                     license {
                         name = "MIT License"
@@ -112,15 +123,15 @@ configure<PublishingExtension> {
                     }
                 }
                 scm {
-                    connection = "scm:git:git://github.com/${project.ext.get("github_handle")}/${project.ext.get("artifact_id")}.git"
-                    developerConnection = "scm:git:ssh://github.com/${project.ext.get("github_handle")}/${project.ext.get("artifact_id")}.git"
-                    url = "https://github.com/${project.ext.get("github_handle")}/${project.ext.get("artifact_id")}/"
+                    connection = "scm:git:git://github.com/${githubHandle}/${pluginIdentifier}.git"
+                    developerConnection = "scm:git:ssh://github.com/${githubHandle}/${pluginIdentifier}.git"
+                    url = "https://github.com/${githubHandle}/${pluginIdentifier}/"
                 }
                 developers {
                     developer {
-                        id = "${project.ext.get("github_handle")}"
-                        email = "${project.ext.get("github_handle")}@users.noreply.github.com"
-                        name = "${project.ext.get("plugin_dev")}"
+                        id = githubHandle
+                        email = githubEmail
+                        name = githubDev
                     }
                 }
             }

@@ -37,8 +37,6 @@ import io.syslogic.gpr.task.VersionIdTask;
 class GprMaintenancePlugin implements Plugin<Project> {
     @NotNull private final String taskGroup = "publishing";
     @NotNull private String packageType = "maven";
-    @SuppressWarnings("FieldCanBeLocal")
-    @NotNull private final String extName = "gpr";
     @Nullable private File tokenProperties = null;
     @NotNull private Boolean listPackagesAfterPublish = false;
     @NotNull private Boolean deleteOnConflict = true;
@@ -154,11 +152,11 @@ class GprMaintenancePlugin implements Plugin<Project> {
         project.afterEvaluate( it ->
                 it.getTasks().stream().filter(item -> item.getName().matches(Constants.PUBLISH_TASK_PATTERN)).forEach( task -> {
                     if (dependsOn != null) {
-                        stdOut(":" + task.getName() + " depends on :" + dependsOn);
+                        // stdOut(":" + task.getName() + " depends on :" + dependsOn);
                         task.dependsOn(dependsOn);
                     }
                     if (finalizedBy != null) {
-                        stdOut(":" + task.getName() + " finalized by :" + finalizedBy);
+                        // stdOut(":" + task.getName() + " finalized by :" + finalizedBy);
                         task.finalizedBy(finalizedBy);
                     }
                 })
@@ -275,7 +273,7 @@ class GprMaintenancePlugin implements Plugin<Project> {
     @NotNull
     private GprMaintenance applyExtension(@NotNull Project project) {
         return project.getExtensions()
-                .create(this.extName, GprMaintenanceExtension.class);
+                .create(Constants.EXTENSION_NAME, GprMaintenanceExtension.class);
     }
 
     /** Printing logs to <code>stdout</code>. */
