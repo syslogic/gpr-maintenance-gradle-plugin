@@ -32,7 +32,7 @@ buildscript {
         maven { url 'https://jitpack.io' }
     }
     dependencies {
-        classpath "io.syslogic:gpr-maintenance-gradle-plugin:1.0.2"
+        classpath "io.syslogic:gpr-maintenance-gradle-plugin:1.0.5"
     }
 }
 ````
@@ -40,7 +40,7 @@ buildscript {
 Or in version-catalog `gradle/libs.versions.toml`:
 ````toml
 [versions]
-gpr_maintenance_plugin = "1.0.2"
+gpr_maintenance_plugin = "1.0.5"
 
 [plugins]
 gpr_maintenance = { id = "io.syslogic.gpr.maintenance", version.ref = "gpr_maintenance_plugin" }

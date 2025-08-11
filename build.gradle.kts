@@ -2,12 +2,7 @@
 plugins {
     alias(buildSrc.plugins.gradle.plugin)
     alias(buildSrc.plugins.maven.publish)
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
+    // alias(buildSrc.plugins.gpr.maintenance)
 }
 
 val pluginId: String by extra(buildSrc.versions.plugin.id.get())
@@ -23,6 +18,12 @@ val githubDev: String by extra(buildSrc.versions.github.dev.get())
 
 group = pluginGroup
 version = pluginVersion
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
 
 dependencies {
     api(gradleApi())
@@ -55,7 +56,7 @@ tasks.withType<Test>().configureEach {
 }
 
 tasks.withType<Jar>().configureEach {
-    archiveBaseName.set("${pluginIdentifier}-${pluginVersion}")
+    archiveBaseName.set(pluginIdentifier)
     archiveVersion.set(pluginVersion)
 }
 
@@ -110,7 +111,7 @@ afterEvaluate {
             create<MavenPublication>("Plugin") {
                 from(components["java"])
                 groupId = pluginGroup
-                artifactId = pluginIdentifier
+                artifactId = pluginId
                 version = pluginVersion
                 pom {
                     name = pluginName

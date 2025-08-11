@@ -9,7 +9,10 @@ github_email            = "syslogic@users.noreply.github.com"
 github_dev              = "Martin Zeitler"
 github_handle           = "syslogic"
 
-plugin_version          = "1.0.4"
+plugin_version           = "1.0.6"
+gpr_maintenance          = "1.0.5"
+
+
 annotations             = "26.0.2"
 http_client             = "5.5"
 http_core               = "5.3.4"
@@ -19,6 +22,7 @@ junit                   = "5.13.4" # "6.0.0-M2"
 [plugins]
 gradle_plugin           = { id = "org.gradle.java-gradle-plugin" }
 maven_publish           = { id = "maven-publish" }
+gpr_maintenance         = { id = "io.syslogic.gpr.maintenance", version.ref = "gpr_maintenance" }
 
 [libraries]
 junit_bom               = { module = "org.junit:junit-bom", version.ref = "junit" }
