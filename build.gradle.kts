@@ -1,13 +1,23 @@
 // :buildSrc
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {url = uri("https://jitpack.io") }
+    }
+    dependencies {
+        // Add the plugin to classpath when not building in `buildSrc`.
+        if (! file("../buildSrc").exists()) {
+            classpath(libs.gpr.maintenance)
+        }
+    }
+}
+
 plugins {
     alias(buildSrc.plugins.gradle.plugin)
     alias(buildSrc.plugins.maven.publish)
 }
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
+if (! file("../buildSrc").exists()) {
+    pluginManager.apply("io.syslogic.gpr.maintenance")
 }
 
 val pluginId: String by extra(buildSrc.versions.plugin.id.get())
@@ -23,6 +33,12 @@ val githubDev: String by extra(buildSrc.versions.github.dev.get())
 
 group = pluginGroup
 version = pluginVersion
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
 
 dependencies {
     api(gradleApi())
@@ -54,8 +70,12 @@ tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
 
+tasks.withType<AbstractTestTask>().configureEach {
+    failOnNoDiscoveredTests = false
+}
+
 tasks.withType<Jar>().configureEach {
-    archiveBaseName.set("${pluginIdentifier}-${pluginVersion}")
+    archiveBaseName.set(pluginIdentifier)
     archiveVersion.set(pluginVersion)
 }
 

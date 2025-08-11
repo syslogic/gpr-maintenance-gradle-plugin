@@ -276,13 +276,19 @@ class GprMaintenancePlugin implements Plugin<Project> {
                 .create(Constants.EXTENSION_NAME, GprMaintenanceExtension.class);
     }
 
-    /** Printing logs to <code>stdout</code>. */
-    void stdOut(@NotNull String value) {
+    /**
+     * Log to <code>stdout</code>.
+     * @param value the string to log.
+     */
+    protected void stdOut(@NotNull String value) {
         System.out.println(value);
     }
 
-    /** Printing logs to <code>stderr</code>. */
-    void stdErr(@SuppressWarnings("SameParameterValue") @NotNull String value) {
+    /**
+     * Log to <code>stderr</code>.
+     * @param value the string to log.
+     */
+    protected void stdErr(@NotNull String value) {
         System.err.println(value);
     }
 }

@@ -57,7 +57,11 @@ abstract public class BaseTask extends DefaultTask {
         return this.clientId != null && this.clientSecret != null;
     }
 
-    /** <b>Utility</b> Wrapping the JSON response with an array called <code>items</code>, in order to parse it. */
+    /**
+     * <b>Utility</b> Wrapping the JSON response with an array called <code>items</code>, in order to parse it.
+     * @param response the JSON response to wrap.
+     * @return the wrapped JSON response.
+     */
     @NotNull
     protected String wrapResponseItems(@NotNull String response) {
         if (! response.startsWith("[") && ! response.endsWith("]")) {response = "[" + response + "]";}
@@ -65,9 +69,18 @@ abstract public class BaseTask extends DefaultTask {
         return response;
     }
 
+    /**
+     * Log to <code>stdout</code>.
+     * @param value the string to log.
+     */
     protected void stdOut(@NotNull String value) {
         System.out.println(value);
     }
+
+    /**
+     * Log to <code>stderr</code>.
+     * @param value the string to log.
+     */
     protected void stdErr(@NotNull String value) {
         System.err.println(value);
     }

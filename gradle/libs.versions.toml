@@ -9,7 +9,8 @@ github_email            = "syslogic@users.noreply.github.com"
 github_dev              = "Martin Zeitler"
 github_handle           = "syslogic"
 
-plugin_version          = "1.0.4"
+plugin_version           = "1.0.6"
+
 annotations             = "26.0.2"
 http_client             = "5.5"
 http_core               = "5.3.4"
@@ -21,6 +22,9 @@ gradle_plugin           = { id = "org.gradle.java-gradle-plugin" }
 maven_publish           = { id = "maven-publish" }
 
 [libraries]
+# Plugins on classpath need to be defined like this.
+gpr_maintenance         = { module = "io.syslogic:gpr-maintenance-gradle-plugin", version.ref = "plugin_version" }
+
 junit_bom               = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit_platform_launcher = { module = "org.junit.platform:junit-platform-launcher" }
 junit_vintage_engine    = { module = "org.junit.vintage:junit-vintage-engine" }
