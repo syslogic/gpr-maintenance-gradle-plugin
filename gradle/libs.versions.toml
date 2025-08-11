@@ -9,7 +9,7 @@ github_email            = "syslogic@users.noreply.github.com"
 github_dev              = "Martin Zeitler"
 github_handle           = "syslogic"
 
-plugin_version          = "1.0.3"
+plugin_version          = "1.0.4"
 annotations             = "26.0.2"
 http_client             = "5.5"
 http_core               = "5.3.4"
