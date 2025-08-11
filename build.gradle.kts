@@ -4,12 +4,6 @@ plugins {
     alias(buildSrc.plugins.maven.publish)
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-}
-
 val pluginId: String by extra(buildSrc.versions.plugin.id.get())
 val pluginCls: String by extra(buildSrc.versions.plugin.cls.get())
 val pluginGroup: String by extra(buildSrc.versions.plugin.group.get())
@@ -23,6 +17,12 @@ val githubDev: String by extra(buildSrc.versions.github.dev.get())
 
 group = pluginGroup
 version = pluginVersion
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
 
 dependencies {
     api(gradleApi())
@@ -55,7 +55,7 @@ tasks.withType<Test>().configureEach {
 }
 
 tasks.withType<Jar>().configureEach {
-    archiveBaseName.set("${pluginIdentifier}-${pluginVersion}")
+    archiveBaseName.set(pluginIdentifier)
     archiveVersion.set(pluginVersion)
 }
 
