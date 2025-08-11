@@ -1,5 +1,6 @@
 package io.syslogic.gpr;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
@@ -13,6 +14,13 @@ public interface GprMaintenance {
 
     /** GPR package-types. */
     List<String> packageTypes = List.of("npm", "maven", "rubygems", "docker", "nuget", "container");
+
+    /**
+     * Package Type
+     * <code>gpr { packageType = "maven" }</code>
+     * @return the package type.
+     */
+    String getPackageType();
 
     /**
      * Define the path to the PAT properties file.
@@ -34,15 +42,6 @@ public interface GprMaintenance {
      * @return the package name.
      */
     String getPackageName();
-
-    String getVersionName();
-
-    /**
-     * Package Type
-     * <code>gpr { packageType = "maven" }</code>
-     * @return the package type.
-     */
-    String getPackageType();
 
     /**
      * Package-Listing Page Size.
@@ -80,18 +79,19 @@ public interface GprMaintenance {
     Boolean getDeleteLastVersion();
 
     /**
-     * Define the path to the API client configuration file.
-     * <code>gpr {tokenProperties = ""}</code>
-     * @param value the absolute path to the <code>token.properties</code> file.
-     */
-    void setTokenProperties(String value);
-
-    /**
      * Package Type.
      * <code>gpr {packageType = "maven"}</code>
      * @param value the type of package.
      */
     void setPackageType(String value);
+
+    /**
+     * Define the path to the API client configuration file.
+     * <code>gpr {tokenProperties = ""}</code>
+     * @param value the absolute path to the <code>token.properties</code> file.
+     * @throws FileNotFoundException then the file cannot be found.
+     */
+    void setTokenProperties(String value) throws FileNotFoundException;
 
     /**
      * Package GroupId.
@@ -106,13 +106,6 @@ public interface GprMaintenance {
      * @param value the name of package.
      */
     void setPackageName(String value);
-
-    /**
-     * Package Version Name.
-     * <code>gpr {versionName = ""}</code>
-     * @param value the version of package.
-     */
-    void setVersionName(String value);
 
     /**
      * Package-Listing Page Size.
@@ -143,5 +136,4 @@ public interface GprMaintenance {
      * @param value true/false.
      */
     void setDeleteLastVersion(Boolean value);
-
 }

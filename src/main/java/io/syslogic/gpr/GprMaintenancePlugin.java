@@ -119,6 +119,7 @@ class GprMaintenancePlugin implements Plugin<Project> {
         this.userName = credentials.get(0);
         String versionName = project.getVersion().toString();
         String uri = Constants.getPackageVersionsUri(packageType, packageName);
+        if (this.logHttp) {this.stdOut("GET " + uri);}
         try {
             HttpGet request = new HttpGet(new URIBuilder(uri).build());
             request.setHeaders(HttpClientImpl.getRequestHeaders(credentials.get(0), credentials.get(1)));
