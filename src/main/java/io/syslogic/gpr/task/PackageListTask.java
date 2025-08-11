@@ -12,8 +12,13 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 import org.jetbrains.annotations.NotNull;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import io.syslogic.gpr.Constants;
 import io.syslogic.gpr.HttpClientImpl;
+import io.syslogic.gpr.model.Package;
 import io.syslogic.gpr.response.PackageResponse;
 import io.syslogic.gpr.response.VersionResponse;
 
@@ -34,56 +39,61 @@ abstract public class PackageListTask extends BasePackageTask {
 
     @NotNull Integer currentPage = 1;
 
+    ArrayList<Package> mItems = new ArrayList<>();
+
     /** The default {@link TaskAction}. */
     @TaskAction
     public void run() {
         if (this.configure(getProject(), getLogHttp().get())) {
-            this.getPackages(getPageSize().get(), this.currentPage);
+            String uri = Constants.getPackageIndexUri(getPackageType().get(), getPageSize().get(), this.currentPage);
+            this.getPackages(uri);
         }
     }
 
     /**
-     * List all packages of the authenticated user and the versions.
-     * TODO: pagination support?
-     * @param pageSize the page-size for the request.
+     * List packages and their versions for the authenticated user.
+     * @param uri the paginated URL for the request.
      */
-    public void getPackages(int pageSize, int page) {
-
-        String uri = Constants.USER_PACKAGES + "?package_type=" + getPackageType().get() + "&per_page=" + pageSize + "&page=" + page;
-        if (getLogHttp().get()) {
-            this.stdOut("GET " + uri);
-            this.stdOut("");
-        }
+    public void getPackages(String uri) {
+        if (getLogHttp().get()) {this.stdOut("GET " + uri);}
         try {
+            AtomicBoolean hasNext = new AtomicBoolean(true);
             HttpGet request = new HttpGet(new URIBuilder(uri).build());
             request.setHeaders(this.getHeaders());
-            client.execute(request, response -> {
-                String nextPage = HttpClientImpl.getNextPage(response.getHeaders());
-                if (nextPage != null && getLogHttp().get()) {this.stdOut(nextPage);}
-                PackageResponse packageResponse = null;
-                if (response.getCode() == HttpStatus.SC_OK) {
-                    HttpEntity httpEntity = response.getEntity();
-                    String result = EntityUtils.toString(httpEntity);
-                    packageResponse = this.gson.fromJson(wrapResponseItems(result), PackageResponse.class);
-                    for (io.syslogic.gpr.model.Package item : packageResponse.getItems()) {
-                        this.stdOut(item.toString());
-                        this.getPackageVersions(item.getName());
-                        this.stdOut(""); // line-feed.
+            while (hasNext.get()) {
+                PackageResponse paged = client.execute(request, response -> {
+                    String nextPage = HttpClientImpl.getNextPage(response.getHeaders());
+                    PackageResponse packageResponse = new PackageResponse();
+                    if (response.getCode() == HttpStatus.SC_OK) {
+                        HttpEntity httpEntity = response.getEntity();
+                        String result = EntityUtils.toString(httpEntity);
+                        packageResponse = this.gson.fromJson(wrapResponseItems(result), PackageResponse.class);
+                        for (io.syslogic.gpr.model.Package item : packageResponse.getItems()) {
+                            this.stdOut(item.toString());
+                            this.getPackageVersions(item.getName());
+                            this.stdOut(""); // line-feed.
+                        }
+                        if (nextPage != null) {
+                            // Return that "next page" pagination-link with the response.
+                            if (getLogHttp().get()) {this.stdOut("| next page: " + nextPage);}
+                            packageResponse.setNextPage(nextPage);
+                        } else {
+                            packageResponse.setNextPage(null);
+                            hasNext.set(false);
+                        }
+                        return packageResponse;
+                    } else if (getLogHttp().get()) {
+                        this.stdErr("HTTP " + response.getCode() + " " + response.getReasonPhrase());
                     }
-                } else if (getLogHttp().get()) {
-                    this.stdErr("HTTP " + response.getCode() + " " + response.getReasonPhrase());
-                }
+                    return packageResponse;
+                });
 
-                // TODO: Somehow use that "next page" pagination link.
-                if (nextPage != null) {
-                    packageResponse.setNextPage(nextPage);
-                    if (getLogHttp().get()) {
-                        this.stdOut("| next page: " + nextUrl);
-                    }
+                ArrayList<Package> items = paged.getItems();
+                mItems.addAll(items);
+                if (paged.getNextPage() != null) {
+                    request.setUri(URI.create(paged.getNextPage()));
                 }
-                return packageResponse;
-            });
-
+            }
         } catch(Exception e) {
             this.stdErr(e.getMessage());
         }

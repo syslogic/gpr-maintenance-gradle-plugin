@@ -17,6 +17,11 @@ plugins {
     alias(buildSrc.plugins.maven.publish)
 }
 
+// Apply plugin to classpath when not running  in `buildSrc`.
+if (! file("../buildSrc").exists()) {
+    pluginManager.apply("io.syslogic.gpr.maintenance")
+}
+
 val pluginId: String by extra(buildSrc.versions.plugin.id.get())
 val pluginCls: String by extra(buildSrc.versions.plugin.cls.get())
 val pluginGroup: String by extra(buildSrc.versions.plugin.group.get())
@@ -35,11 +40,6 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
-}
-
-// Apply the plugin to classpath when not building in `buildSrc`.
-if (! file("../buildSrc").exists()) {
-    pluginManager.apply("io.syslogic.gpr.maintenance")
 }
 
 dependencies {

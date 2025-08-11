@@ -2,7 +2,11 @@ package io.syslogic.gpr;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Locale;
+
+import io.syslogic.gpr.model.Credentials;
 
 /**
  * Public API for Gradle build scripts.
@@ -11,16 +15,15 @@ import java.util.Locale;
 @SuppressWarnings("unused")
 public class GprMaintenanceExtension implements GprMaintenance {
 
-    String packageType = "maven";
-    String groupId = null;
-    String packageName = null;
-    String versionName = null;
-    String tokenProperties = null;
-    Boolean deleteOnConflict = false;
-    Boolean deleteLastVersion = false;
-    Boolean listPackagesAfterPublish = false;
-    Boolean logHttp = false;
-    Integer pageSize = 30;
+    private String packageType = "maven";
+    private String groupId = null;
+    private String packageName = null;
+    private String tokenProperties = null;
+    private Boolean deleteOnConflict = false;
+    private Boolean deleteLastVersion = false;
+    private Boolean listPackagesAfterPublish = false;
+    private Boolean logHttp = false;
+    private Integer pageSize = 30;
 
     /** {@inheritDoc} */
     @Override
@@ -35,8 +38,14 @@ public class GprMaintenanceExtension implements GprMaintenance {
 
     /** {@inheritDoc} */
     @Override
-    public void setTokenProperties(@NotNull String value) {
-        this.tokenProperties = value;
+    public void setTokenProperties(@NotNull String value) throws FileNotFoundException {
+        if (! new File(value).exists()) {
+            throw new FileNotFoundException("file not found: " + value);
+        } else if (! Credentials.isPlausible(new File(value))) {
+            throw new IllegalArgumentException("file not plausible: " + value);
+        } else {
+            this.tokenProperties = value;
+        }
     }
 
     /** {@inheritDoc} */
@@ -73,12 +82,6 @@ public class GprMaintenanceExtension implements GprMaintenance {
     @Override
     public void setPackageName(String value) {
         this.packageName = value;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setVersionName(String value) {
-        this.versionName = value;
     }
 
     @Override
@@ -139,11 +142,5 @@ public class GprMaintenanceExtension implements GprMaintenance {
     @Override
     public String getPackageName() {
         return this.packageName;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String getVersionName() {
-        return this.versionName;
     }
 }

@@ -15,11 +15,11 @@ import java.util.List;
  * @author Martin Zeitler
  */
 public class Credentials {
+    static List<String> separators = List.of(" ", "|", "/");
+    static List<String> data = List.of("");
 
     @NotNull
     public static List<String> getCredentials(@NotNull File properties) {
-        List<String> separators = List.of(" ", "|", "/");
-        List<String> data = List.of("");
         if (properties.exists()) {
             // Attempt to parse file `token.properties`.
             String value = readFile(properties).trim();
@@ -37,6 +37,21 @@ public class Credentials {
             stdErr("*** `$GITHUB_ACTOR` and `$GITHUB_TOKEN` also not present");
         }
         return data;
+    }
+
+    @NotNull
+    public static Boolean isPlausible(@NotNull File properties) {
+        List<String> separators = List.of(" ", "|", "/");
+        if (properties.exists()) { // exists
+            String value = readFile(properties).trim();
+            for (String separator : separators) {
+                if (value.contains(separator)) {
+                    data = List.of(readFile(properties).split(separator));
+                    return data.size() == 2;
+                }
+            }
+        }
+        return false;
     }
 
     @NotNull

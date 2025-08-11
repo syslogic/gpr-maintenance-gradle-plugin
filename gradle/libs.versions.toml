@@ -9,7 +9,8 @@ github_email            = "syslogic@users.noreply.github.com"
 github_dev              = "Martin Zeitler"
 github_handle           = "syslogic"
 
-plugin_version           = "1.0.7"
+plugin_version           = "1.0.9"
+gpr_maintenance          = "1.0.8"
 
 annotations             = "26.0.2"
 http_client             = "5.5"
@@ -23,18 +24,18 @@ maven_publish           = { id = "maven-publish" }
 
 [libraries]
 # Plugins on classpath need to be defined like this.
-gpr_maintenance         = { module = "io.syslogic:gpr-maintenance-gradle-plugin", version.ref = "plugin_version" }
+gpr_maintenance         = { module = "io.syslogic:gpr-maintenance-gradle-plugin", version.ref = "gpr_maintenance" }
 
+http_client             = { module = "org.apache.httpcomponents.client5:httpclient5", version.ref = "http_client" }
+http_core               = { module = "org.apache.httpcomponents.core5:httpcore5", version.ref = "http_core" }
+annotations             = { module = "org.jetbrains:annotations", version.ref = "annotations" }
+gson                    = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit_bom               = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit_platform_launcher = { module = "org.junit.platform:junit-platform-launcher" }
 junit_vintage_engine    = { module = "org.junit.vintage:junit-vintage-engine" }
 junit_jupiter_engine    = { module = "org.junit.jupiter:junit-jupiter-engine" }
 junit_jupiter_api       = { module = "org.junit.jupiter:junit-jupiter-api" }
 junit_jupiter           = { module = "org.junit.jupiter:junit-jupiter" }
-http_client             = { module = "org.apache.httpcomponents.client5:httpclient5", version.ref = "http_client" }
-http_core               = { module = "org.apache.httpcomponents.core5:httpcore5", version.ref = "http_core" }
-annotations             = { module = "org.jetbrains:annotations", version.ref = "annotations" }
-gson                    = { module = "com.google.code.gson:gson", version.ref = "gson" }
 
 [bundles]
 junit_runtime           = [ "junit_platform_launcher", "junit_vintage_engine", "junit_jupiter_engine" ]

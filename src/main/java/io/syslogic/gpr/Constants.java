@@ -17,8 +17,22 @@ public class Constants {
     /** API date-format (used by GSON). */
     @NotNull public static final String GITHUB_API_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
+
     /** URI Packages Index */
     @NotNull public static final String USER_PACKAGES = Constants.GITHUB_API_BASE_URL + "user/packages";
+
+
+    /**
+     * URI: Paginated Package Index.
+     * @param packageType the type of package.
+     * @param pageSize page size.
+     * @param page page number.
+     * @return <code>user/packages?package_type={PACKAGE_TYPE}&per_page={PAGE_SIZE}&page={PAGE}</code>
+     */
+    @NotNull
+    public static String getPackageIndexUri(@NotNull String packageType, @NotNull Integer pageSize, @NotNull Integer page) {
+        return Constants.USER_PACKAGES + "?package_type=" + packageType + "&per_page=" + pageSize + "&page=" + page;
+    }
 
     /**
      * URI: Package Version by versionName.
@@ -28,7 +42,7 @@ public class Constants {
      */
     @NotNull
     public static String getPackageVersionsUri(@NotNull String packageType, @NotNull String packageName) {
-        return Constants.GITHUB_API_BASE_URL + "user/packages/" + packageType + "/" + packageName + "/versions";
+        return Constants.USER_PACKAGES + "/" + packageType + "/" + packageName + "/versions";
     }
 
     /**
@@ -54,7 +68,7 @@ public class Constants {
      */
     @NotNull
     public static String getPackageUri(@NotNull String packageType, @NotNull String packageName, @NotNull Long versionId) {
-        return Constants.GITHUB_API_BASE_URL + "user/packages/" + packageType + "/" + packageName + "/versions/" + versionId;
+        return Constants.USER_PACKAGES + "/" + packageType + "/" + packageName + "/versions/" + versionId;
     }
 
     /**
@@ -65,7 +79,7 @@ public class Constants {
      */
     @NotNull
     public static String getPackageDeleteUri(@NotNull String packageType, @NotNull String packageName) {
-        return Constants.GITHUB_API_BASE_URL + "user/packages/" + packageType + "/" + packageName ;
+        return Constants.USER_PACKAGES + "/" + packageType + "/" + packageName ;
     }
 
     /** The regex pattern used to determine the generated publishing tasks. */
