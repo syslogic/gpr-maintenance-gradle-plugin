@@ -68,11 +68,11 @@ public class Version implements Serializable {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "Version {"+
             "id=" + this.id + ", " +
             "name=\"" + this.name + "\", " +
-            "url=\"" + this.url + "\"" +
+            "url=\"" + this.htmlUrl + "\"" +
         "}";
     }
 }

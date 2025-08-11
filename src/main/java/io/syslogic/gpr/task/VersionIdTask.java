@@ -34,7 +34,7 @@ abstract public class VersionIdTask extends BasePackageTask {
             String uri = Constants.getPackageVersionsUri(getPackageType().get(), getPackageName().get());
             try {
                 HttpGet request = new HttpGet(new URIBuilder(uri).build());
-                request.setHeaders(HttpClientImpl.getHeaders(this.clientId, this.clientSecret));
+                request.setHeaders(HttpClientImpl.getRequestHeaders(this.clientId, this.clientSecret));
                 HttpClient client = HttpClientImpl.getHttpClient(getProject(), getLogHttp().get());
                 getVersionId().set((Long) client.execute(request, response -> {
                     VersionResponse versionResponse;
@@ -44,10 +44,8 @@ abstract public class VersionIdTask extends BasePackageTask {
                         Gson gson = new GsonBuilder().setDateFormat(Constants.GITHUB_API_DATE_FORMAT).create();
                         versionResponse = gson.fromJson(wrapResponseItems(result), VersionResponse.class);
                         for (io.syslogic.gpr.model.Version item : versionResponse.getItems()) {
-                            this.stdOut("| + " + item.getId() + " ~ " + item.getName() + " -> " + item.getPackageHtmlUrl());
-                            if (item.getName().equals(versionName)) {
-                                return item.getId(); // versionId
-                            }
+                            this.stdOut("| + " + item.getId() + " ~ " + item.getName() + " -> " + item.getHtmlUrl());
+                            if (item.getName().equals(versionName)) {return item.getId();}
                         }
                     } else if (response.getCode() == HttpStatus.SC_NOT_FOUND) {
                             this.stdOut("> [GPR] package " + getPackageName().get() + " not found.");

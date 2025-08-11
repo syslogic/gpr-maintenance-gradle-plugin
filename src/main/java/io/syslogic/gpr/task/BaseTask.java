@@ -10,7 +10,6 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.Internal;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -37,7 +36,7 @@ abstract public class BaseTask extends DefaultTask {
 
     @Input
     Header[] getHeaders() {
-        return HttpClientImpl.getHeaders(this.clientId, this.clientSecret);
+        return HttpClientImpl.getRequestHeaders(this.clientId, this.clientSecret);
     }
 
     /** It sets up HttpClient and parses two JSON config files. */

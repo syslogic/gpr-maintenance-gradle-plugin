@@ -46,6 +46,7 @@ class GprMaintenancePlugin implements Plugin<Project> {
     @Nullable private String userName = null;
     @Nullable private String packageName = null;
     @Nullable private String versionName = null;
+    @NotNull private Integer pageSize = 30;
     @NotNull private Long versionId = 0L;
 
     @Override
@@ -84,6 +85,7 @@ class GprMaintenancePlugin implements Plugin<Project> {
             this.deleteOnConflict = extension.getDeleteOnConflict();
             this.deleteLastVersion = extension.getDeleteLastVersion();
             this.listPackagesAfterPublish = extension.getListPackagesAfterPublish();
+            this.pageSize = extension.getPageSize();
             this.logHttp = extension.getLogHttp();
 
             /* HTTP: Translate versionName to versionId. */
@@ -100,7 +102,8 @@ class GprMaintenancePlugin implements Plugin<Project> {
             } // else {
                 // It is still unclear, where to get the package/version ID to restore from.
                 // Would need to create a file with the deleted ID and register the task, when file exists.
-                // this.registerPackageRestoreTask(it, Constants.PACKAGE_RESTORE_TASK);
+                // Long oldVersionId = 0
+                // this.registerPackageRestoreTask(it, Constants.PACKAGE_RESTORE_TASK + oldVersionId);
             // }
         });
     }
@@ -118,7 +121,7 @@ class GprMaintenancePlugin implements Plugin<Project> {
         String uri = Constants.getPackageVersionsUri(packageType, packageName);
         try {
             HttpGet request = new HttpGet(new URIBuilder(uri).build());
-            request.setHeaders(HttpClientImpl.getHeaders(credentials.get(0), credentials.get(1)));
+            request.setHeaders(HttpClientImpl.getRequestHeaders(credentials.get(0), credentials.get(1)));
             HttpClient client = HttpClientImpl.getHttpClient(project, logHttp);
             this.versionId = client.execute(request, response -> {
                 VersionResponse versionResponse;
@@ -128,10 +131,8 @@ class GprMaintenancePlugin implements Plugin<Project> {
                     Gson gson = new GsonBuilder().setDateFormat(Constants.GITHUB_API_DATE_FORMAT).create();
                     versionResponse = gson.fromJson(wrapResponseItems(result), VersionResponse.class);
                     for (io.syslogic.gpr.model.Version item : versionResponse.getItems()) {
-                        this.stdOut("| + " + item.getId() + " ~ " + item.getName() + " -> " + item.getPackageHtmlUrl());
-                        if (item.getName().equals(versionName)) {
-                            return item.getId(); // versionId
-                        }
+                        this.stdOut("| + " + item.getId() + " ~ " + item.getName() + " -> " + item.getHtmlUrl());
+                        if (item.getName().equals(versionName)) {return item.getId();}
                     }
                 } else if (response.getCode() == HttpStatus.SC_NOT_FOUND) {
                     this.stdOut("> [GPR] package " + packageName + " not found.");
@@ -172,7 +173,7 @@ class GprMaintenancePlugin implements Plugin<Project> {
                 task.getGroupId().set(groupId);
                 task.getPackageType().set(packageType);
                 task.getPackageName().set(packageName);
-                if (versionName != null) {task.getVersionName().set(versionName);}
+                task.getPageSize().set(pageSize);
                 task.getLogHttp().set(logHttp);
             });
 

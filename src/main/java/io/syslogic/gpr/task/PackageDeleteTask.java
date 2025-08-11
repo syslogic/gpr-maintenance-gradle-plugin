@@ -10,7 +10,6 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
-import org.gradle.api.tasks.TaskContainer;
 
 import io.syslogic.gpr.Constants;
 import io.syslogic.gpr.response.ErrorResponse;
@@ -72,7 +71,6 @@ abstract public class PackageDeleteTask extends BasePackageTask {
             client.execute(request, response -> {
                 if (response.getCode() == HttpStatus.SC_NO_CONTENT) {
                     this.stdOut("> [GPR] package " + getPackageName().get() + " deleted.");
-                    // this.disableTasks(getVersionId().get());
                     getVersionId().set(0L);
                     return true;
                 } else if (getLogHttp().get()) {
@@ -83,17 +81,5 @@ abstract public class PackageDeleteTask extends BasePackageTask {
         } catch(Exception e) {
             this.stdErr(e.getMessage());
         }
-    }
-
-    /**
-     * The problem with these numbered tasks, either:
-     * - Removing tasks from the task container is not supported. Disable the tasks or use replace() instead.
-     * - Cannot call Task.setEnabled(boolean) on task ':library:gprPackageDel_46174555' after task has started execution.
-     * TODO: synchronize the project?
-     */
-    void disableTasks(Long versionId) {
-        // TaskContainer tasks = getProject().getTasks();
-        // tasks.named("gprPackageGet_" + versionId).get().setEnabled(false);
-        // tasks.named("gprPackageDel_" + versionId).get().setEnabled(false);
     }
 }

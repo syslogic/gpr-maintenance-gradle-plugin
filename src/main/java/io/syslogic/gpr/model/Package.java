@@ -67,7 +67,7 @@ public class Package implements Serializable {
         return this.owner;
     }
     @Override
-    public String toString(){
+    public String toString() {
         return "Package {"+
             "id=" + this.id + ", " +
             "name=\"" + this.name + "\", " +

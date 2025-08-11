@@ -63,10 +63,6 @@ public class Credentials {
         return sb.toString();
     }
 
-    private static void stdOut(@NotNull String value) {
-        System.out.println(value);
-    }
-
     private static void stdErr(@NotNull String value) {
         System.err.println(value);
     }

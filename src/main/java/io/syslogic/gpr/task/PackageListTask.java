@@ -6,9 +6,14 @@ import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.net.URIBuilder;
 
+import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
+import org.jetbrains.annotations.NotNull;
 
 import io.syslogic.gpr.Constants;
+import io.syslogic.gpr.HttpClientImpl;
 import io.syslogic.gpr.response.PackageResponse;
 import io.syslogic.gpr.response.VersionResponse;
 
@@ -19,17 +24,32 @@ import io.syslogic.gpr.response.VersionResponse;
  */
 abstract public class PackageListTask extends BasePackageTask {
 
+    /**
+     * API Page Size
+     * @return the integer page-size
+     */
+    @Input
+    @Optional
+    public abstract Property<Integer> getPageSize();
+
+    @NotNull Integer currentPage = 1;
+
     /** The default {@link TaskAction}. */
     @TaskAction
     public void run() {
         if (this.configure(getProject(), getLogHttp().get())) {
-            this.getPackages(100);
+            this.getPackages(getPageSize().get(), this.currentPage);
         }
     }
 
-    /** List all packages of the authenticated user and the versions. */
-    public void getPackages(int pageSize) {
-        String uri = Constants.USER_PACKAGES + "?package_type=" + getPackageType().get() + "&per_page=" + pageSize;
+    /**
+     * List all packages of the authenticated user and the versions.
+     * TODO: pagination support?
+     * @param pageSize the page-size for the request.
+     */
+    public void getPackages(int pageSize, int page) {
+
+        String uri = Constants.USER_PACKAGES + "?package_type=" + getPackageType().get() + "&per_page=" + pageSize + "&page=" + page;
         if (getLogHttp().get()) {
             this.stdOut("GET " + uri);
             this.stdOut("");
@@ -38,6 +58,8 @@ abstract public class PackageListTask extends BasePackageTask {
             HttpGet request = new HttpGet(new URIBuilder(uri).build());
             request.setHeaders(this.getHeaders());
             client.execute(request, response -> {
+                String nextPage = HttpClientImpl.getNextPage(response.getHeaders());
+                if (nextPage != null && getLogHttp().get()) {this.stdOut(nextPage);}
                 PackageResponse packageResponse = null;
                 if (response.getCode() == HttpStatus.SC_OK) {
                     HttpEntity httpEntity = response.getEntity();
@@ -50,6 +72,14 @@ abstract public class PackageListTask extends BasePackageTask {
                     }
                 } else if (getLogHttp().get()) {
                     this.stdErr("HTTP " + response.getCode() + " " + response.getReasonPhrase());
+                }
+
+                // TODO: Somehow use that "next page" pagination link.
+                if (nextPage != null) {
+                    packageResponse.setNextPage(nextPage);
+                    if (getLogHttp().get()) {
+                        this.stdOut("| next page: " + nextUrl);
+                    }
                 }
                 return packageResponse;
             });
@@ -76,7 +106,7 @@ abstract public class PackageListTask extends BasePackageTask {
                     String result = EntityUtils.toString(httpEntity);
                     versionResponse = this.gson.fromJson(wrapResponseItems(result), VersionResponse.class);
                     for (io.syslogic.gpr.model.Version item : versionResponse.getItems()) {
-                        this.stdOut("| + " + item.getId() + " ~ " + item.getName() + " -> " + item.getPackageHtmlUrl());
+                        this.stdOut("| + " + item.getId() + " ~ " + item.getName() + " -> " + item.getHtmlUrl());
                     }
                 } else if (getLogHttp().get()) {
                     this.stdErr("HTTP " + response.getCode() + " " + response.getReasonPhrase());

@@ -7,6 +7,8 @@ import java.util.List;
  *
  * @author Martin Zeitler
  */
+
+@SuppressWarnings("unused")
 public interface GprMaintenance {
 
     /** GPR package-types. */
@@ -43,6 +45,13 @@ public interface GprMaintenance {
     String getPackageType();
 
     /**
+     * Package-Listing Page Size.
+     * <code>gpr { pageSize = 30 }</code>
+     * @return integer value.
+     */
+    Integer getPageSize();
+
+    /**
      * HTTP Request Logging
      * <code>gpr { logHttp = true }</code>
      * @return logHttp true/false.
@@ -77,13 +86,39 @@ public interface GprMaintenance {
      */
     void setTokenProperties(String value);
 
+    /**
+     * Package Type.
+     * <code>gpr {packageType = "maven"}</code>
+     * @param value the type of package.
+     */
     void setPackageType(String value);
 
+    /**
+     * Package GroupId.
+     * <code>gpr {groudId = "io.syslogic"}</code>
+     * @param value the group of package.
+     */
     void setGroupId(String value);
 
+    /**
+     * Package Name.
+     * <code>gpr {packageName = ""}</code>
+     * @param value the name of package.
+     */
     void setPackageName(String value);
 
+    /**
+     * Package Version Name.
+     * <code>gpr {versionName = ""}</code>
+     * @param value the version of package.
+     */
     void setVersionName(String value);
+
+    /**
+     * Package-Listing Page Size.
+     * @param value integer, max value 100.
+     */
+    void setPageSize(Integer value);
 
     /**
      * Set HTTP Request Logging.
@@ -108,4 +143,5 @@ public interface GprMaintenance {
      * @param value true/false.
      */
     void setDeleteLastVersion(Boolean value);
+
 }

@@ -19,7 +19,7 @@ public class MetaData implements Serializable {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "MetaData {"+
             "packageType=\"" + this.packageType + "\"" +
         "}";

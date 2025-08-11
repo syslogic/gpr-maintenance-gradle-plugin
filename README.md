@@ -8,10 +8,15 @@ The trademarks are being referenced for identification purposes only, in terms o
 The official GitHub repositories can be found there: [@GitHub](https://github.com/orgs/GitHub/repositories).
 
  ---
+
+This Gradle plugin was inspired by a [discussion](https://github.com/orgs/community/discussions/149386#discussioncomment-14017558).
+And it may well count as another one GitHub Developer Program contribution, as it is built for and with GitHub API.
+I'm using it in another GitHub one workflow: [`androidx-github`](https://github.com/syslogic/androidx-github)
+
 ### Features
 
-- It automates the GitHub Packages API.
-- It can list and delete Maven packages.
+- It interacts with the GitHub Packages API.
+- It can list and delete versions and packages.
 
 ### Development
 
@@ -32,7 +37,7 @@ buildscript {
         maven { url 'https://jitpack.io' }
     }
     dependencies {
-        classpath "io.syslogic:gpr-maintenance-gradle-plugin:1.0.5"
+        classpath "io.syslogic:gpr-maintenance-gradle-plugin:1.0.7"
     }
 }
 ````
@@ -40,7 +45,7 @@ buildscript {
 Or in version-catalog `gradle/libs.versions.toml`:
 ````toml
 [versions]
-gpr_maintenance_plugin = "1.0.5"
+gpr_maintenance_plugin = "1.0.7"
 
 [plugins]
 gpr_maintenance = { id = "io.syslogic.gpr.maintenance", version.ref = "gpr_maintenance_plugin" }
@@ -61,23 +66,27 @@ The credentials are either being picked up from file `token.properties` (format:
 When running in GitHub workflow, one has to pass environmental variables, which are also picked up.  
 
 ````yaml
-      - name: Publish :library
-        env:
-          GITHUB_ACTOR: ${{ GITHUB.REPOSITORY_OWNER }}
-          GITHUB_TOKEN: ${{ SECRETS.GITHUB_TOKEN }}
-        run: |
-          chmod + ./gradlew
-          ./gradlew --no-daemon :library:publish
-          ls -la ./library/build/outputs/aar | grep aar
+- name: 🐘 Publish AAR to GPR
+  env:
+    GITHUB_ACTOR: ${{ GITHUB.REPOSITORY_OWNER }}
+    GITHUB_TOKEN: ${{ SECRETS.GITHUB_TOKEN }}
+  run: |
+    chmod + ./gradlew
+    ./gradlew --max-workers=2 :library:publishLibraryPublicationToGitHubPackagesRepository
+    ls -la ./library/build/outputs/aar | grep aar
 ````
 The `GprMaintenanceExtension` can be configured with the following properties:
 
-- `tokenProperties`: The absolute path to the `token.properties` file.
-- `deleteOnConflict`: Delete conflicting package version upon publish: true/false.
-- `deleteLastVersion`: Delete package, when deleting the last version fails: true/false.
-- `listPackagesAfterPublish`: List all Maven packages after publish: true/false.
-- `logHttp`: HTTP logging: true/false.
+| Property                   | Description                                                                         | Type      | Default |
+|----------------------------|-------------------------------------------------------------------------------------|-----------|---------|
+| `tokenProperties`          | The absolute path to file `token.properties`, with content: `<username> <token>`.   | `String`  | `null`  |
+|                            |                                                                                     |           |         |
+| `deleteOnConflict`         | Delete conflicting package version upon publish: true/false.                        | `Boolean` | `false` |
+| `deleteLastVersion`        | Delete the whole package, when attempting to delete the last version: true/false.   | `Boolean` | `false` |
+| `listPackagesAfterPublish` | List all packages after publish: true/false.                                        | `Boolean` | `false` |
+| `logHttp`                  | HTTP logging: true/false                                                            | `Boolean` | `false` |
 
+Groovy.
 ````groovy
 gpr {
     tokenProperties = rootProject.file("token.properties").absolutePath
@@ -88,14 +97,9 @@ gpr {
 }
 ````
 
+In Kotlin one has to use `configure()`:
 ````kotlin
-configure<GprMaintenanceExtension> {
-    tokenProperties = rootProject.file("token.properties").absolutePath
-    deleteOnConflict = true
-    deleteLastVersion = true
-    listPackagesAfterPublish = true
-    logHttp = false
-}
+configure<GprMaintenanceExtension> {}
 ````
 
 This configuration is optional, while providing the config file at the default location:
