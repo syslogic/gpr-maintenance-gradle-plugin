@@ -15,6 +15,7 @@ buildscript {
 plugins {
     alias(buildSrc.plugins.gradle.plugin)
     alias(buildSrc.plugins.maven.publish)
+    // id("io.syslogic.gpr.maintenance") apply(false)
 }
 
 val pluginId: String by extra(buildSrc.versions.plugin.id.get())
@@ -35,11 +36,6 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
-}
-
-// Apply the plugin to classpath when not building in `buildSrc`.
-if (! file("../buildSrc").exists()) {
-    pluginManager.apply("io.syslogic.gpr.maintenance")
 }
 
 dependencies {
@@ -159,5 +155,13 @@ afterEvaluate {
                 }
             }
         }
+    }
+}
+
+// Apply plugin to classpath when not running  in `buildSrc`.
+if (! file("../buildSrc").exists()) {
+    pluginManager.apply("io.syslogic.gpr.maintenance")
+    project.extensions.get("gpr").apply {
+        setProperty("packageNamer", pluginIdentifier)
     }
 }

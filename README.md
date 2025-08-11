@@ -9,9 +9,10 @@ The official GitHub repositories can be found there: [@GitHub](https://github.co
 
  ---
 
-This Gradle plugin was inspired by a [discussion](https://github.com/orgs/community/discussions/149386#discussioncomment-14017558).
-And it may well count as another one GitHub Developer Program contribution, as it is built for and with GitHub API.
-I'm using it in another GitHub one workflow: [`androidx-github`](https://github.com/syslogic/androidx-github)
+This Gradle plugin was inspired by this [discussion](https://github.com/orgs/community/discussions/149386#discussioncomment-14017558)
+and it may count as another GitHub Developer Program contribution, as it is built for and with GitHub API.
+It is also being used in this repository's workflow: [`androidx-github`](https://github.com/syslogic/androidx-github).
+I've recycled some of the models from the Android Java implementation, as they're merely the same.
 
 ### Features
 
@@ -26,7 +27,7 @@ The plugin source code can be swiftly installed into any Gradle project with `gi
 git clone https://github.com/syslogic/gpr-maintenance-gradle-plugin.git ./buildSrc
 ````
 
-### Package Installation
+### Installation
 
 Plugin `io.syslogic.gpr.maintenance` depends on `maven-publish` (it will be applied).
 
@@ -34,10 +35,13 @@ The plugin can be set up in the `buildscript` block of the root project's `build
 ````groovy
 buildscript {
     repositories {
-        maven { url 'https://jitpack.io' }
+        maven {
+            name = "JitPack"
+            url = uri("https://jitpack.io")
+        }
     }
     dependencies {
-        classpath "io.syslogic:gpr-maintenance-gradle-plugin:1.0.7"
+        classpath("io.syslogic:gpr-maintenance-gradle-plugin:<PLUGIN_VERSION>")
     }
 }
 ````
@@ -45,7 +49,7 @@ buildscript {
 Or in version-catalog `gradle/libs.versions.toml`:
 ````toml
 [versions]
-gpr_maintenance_plugin = "1.0.7"
+gpr_maintenance_plugin = "<PLUGIN_VERSION>"
 
 [plugins]
 gpr_maintenance = { id = "io.syslogic.gpr.maintenance", version.ref = "gpr_maintenance_plugin" }
@@ -63,7 +67,7 @@ plugins {
 ### Configuration
 
 The credentials are either being picked up from file `token.properties` (format: `username token`).
-When running in GitHub workflow, one has to pass environmental variables, which are also picked up.  
+When running in GitHub workflow, one has to declare these environmental variables, which are being picked up instead.  
 
 ````yaml
 - name: 🐘 Publish AAR to GPR
@@ -75,18 +79,21 @@ When running in GitHub workflow, one has to pass environmental variables, which 
     ./gradlew --max-workers=2 :library:publishLibraryPublicationToGitHubPackagesRepository
     ls -la ./library/build/outputs/aar | grep aar
 ````
-The `GprMaintenanceExtension` can be configured with the following properties:
+The [`GprMaintenanceExtension`](https://github.com/syslogic/gpr-maintenance-gradle-plugin/blob/master/src/main/java/io/syslogic/gpr/GprMaintenanceExtension.java) can be configured with the following properties:
 
-| Property                   | Description                                                                         | Type      | Default |
-|----------------------------|-------------------------------------------------------------------------------------|-----------|---------|
-| `tokenProperties`          | The absolute path to file `token.properties`, with content: `<username> <token>`.   | `String`  | `null`  |
-|                            |                                                                                     |           |         |
-| `deleteOnConflict`         | Delete conflicting package version upon publish: true/false.                        | `Boolean` | `false` |
-| `deleteLastVersion`        | Delete the whole package, when attempting to delete the last version: true/false.   | `Boolean` | `false` |
-| `listPackagesAfterPublish` | List all packages after publish: true/false.                                        | `Boolean` | `false` |
-| `logHttp`                  | HTTP logging: true/false                                                            | `Boolean` | `false` |
+| Property                    | Description                                                                                                                                      | Type      | Default       |
+|-----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|-----------|---------------|
+| `packageType`               | The package-type to query; any of: `npm`, `maven`, `rubygems`, `docker`, `nuget`, `container`.                                                   | `String`  | `maven`       |
+| `groupId`                   | The group-name of the package to look up (project value override).                                                                               | `String`  | project value |
+| `packageName`               | The package-name of the package to look up (project value override).                                                                             | `String`  | project value |
+| `tokenProperties`           | The absolute path to file `token.properties`, containing following format: `<username> <token>`. Valid string-separators are: ` `, `\|` and `/`. | `String`  | `null`        |
+| `deleteOnConflict`          | Delete conflicting package version upon publish.                                                                                                 | `Boolean` | `false`       |
+| `deleteLastVersion`         | Delete the whole package, when attempting to delete the last version.                                                                            | `Boolean` | `false`       |
+| `listPackagesAfterPublish`  | List all packages after publish.                                                                                                                 | `Boolean` | `false`       |
+| `logHttp`                   | HTTP logging                                                                                                                                     | `Boolean` | `false`       |
+| `pageSize`                  | Paginated package Listing page-size (max value `100`)                                                                                            | `Integer` | `30`          |
 
-Groovy.
+In Groovy `build.gradle`, the extension is being called `gpr`.
 ````groovy
 gpr {
     tokenProperties = rootProject.file("token.properties").absolutePath
@@ -97,12 +104,12 @@ gpr {
 }
 ````
 
-In Kotlin one has to use `configure()`:
+In Kotlin `build.gradle.kts` one has to use `configure<?>()`.
 ````kotlin
-configure<GprMaintenanceExtension> {}
+configure<GprMaintenanceExtension> { /* ... */ }
 ````
 
-This configuration is optional, while providing the config file at the default location:
+Configuration `tokenProperties` is optional, while providing the config file at the default location:
 
  - `buildSrc/token.properties` or the parent project directory `buildSrc/../token.properties`.
 
@@ -116,7 +123,7 @@ This configuration is optional, while providing the config file at the default l
     | + 46168200 ~ 1.0.5 -> https://api.github.com/users/syslogic/packages/maven/io.syslogic.androidx-github/versions/46168200
 
     > Task :library:gprPackageDel_46168200
-    > [GPR] package io.syslogic.androidx-github deleted altogether.
+    > [GPR] package io.syslogic.androidx-github deleted.
 
     > Task :library:gprPackageList
     Package {id=2607064, name="io.syslogic.agconnect-publishing-gradle-plugin", packageType="maven", visibility="public", versionCount=1, url="https://api.github.com/users/syslogic/packages/maven/io.syslogic.agconnect-publishing-gradle-plugin"}
@@ -129,8 +136,8 @@ This configuration is optional, while providing the config file at the default l
 
 ### Status
 
-[![Gradle CI](https://github.com/syslogic/gpr-maintenance-gradle-plugin/actions/workflows/gradle.yml/badge.svg)](https://github.com/syslogic/gpr-maintenance-gradle-plugin/actions/workflows/gradle.yml)
+[![Gradle CI](https://img.shields.io/github/actions/workflow/status/syslogic/gpr-maintenance-gradle-plugin/gradle.yml?style=for-the-badge)](https://github.com/syslogic/gpr-maintenance-gradle-plugin/actions)
 
-[![Release](https://jitpack.io/v/syslogic/gpr-maintenance-gradle-plugin.svg)](https://jitpack.io/#io.syslogic/gpr-maintenance-gradle-plugin)
+[![JitPack](https://img.shields.io/jitpack/version/io.syslogic/gpr-maintenance-gradle-plugin?style=for-the-badge)](https://jitpack.io/#io.syslogic/gpr-maintenance-gradle-plugin)
 
-[![MIT License](https://img.shields.io/github/license/syslogic/gpr-maintenance-gradle-plugin)](https://github.com/syslogic/gpr-maintenance-gradle-plugin/blob/master/LICENSE)<!-- @IGNORE PREVIOUS: link -->
+[![MIT License](https://img.shields.io/github/license/syslogic/gpr-maintenance-gradle-plugin?style=for-the-badge)](https://github.com/syslogic/gpr-maintenance-gradle-plugin/blob/master/LICENSE)<!-- @IGNORE PREVIOUS: link -->

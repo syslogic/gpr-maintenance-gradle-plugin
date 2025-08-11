@@ -61,16 +61,26 @@ class GprMaintenancePlugin implements Plugin<Project> {
         /* Project after evaluate. */
         project.afterEvaluate(it -> {
 
-            /* Using the groupId & version of the project. */
-            this.groupId = it.getGroup().toString();
-            this.versionName = it.getVersion().toString();
+            /* The packageType can't have any wrongful values. */
             this.packageType = extension.getPackageType();
 
+            /* Obtain the groupId & version of the project. */
+            this.groupId = it.getGroup().toString();
+            this.versionName = it.getVersion().toString();
+
+            /* The packageName is crucial for lookups. */
             if (extension.getPackageName() != null) {
                 this.packageName = it.getGroup() + "." + extension.getPackageName();
             }
 
-            /* Token Properties. */
+            /* When the packageName was not provided by extension. */
+            if (this.packageName == null) {
+                /* Assume the project name to be the package name. */
+                this.packageName = it.getGroup() + "." + this.getProjectName(it);
+                this.stdOut("> [GPR] package name assumed: " + this.packageName);
+            }
+
+            /* Token Properties File. */
             if (extension.getTokenProperties() != null) {
                 this.tokenProperties = new File(extension.getTokenProperties());
             }
@@ -108,6 +118,11 @@ class GprMaintenancePlugin implements Plugin<Project> {
         });
     }
 
+    @NotNull
+    private String getProjectName(@NotNull Project project) {
+        return project.getName();
+    }
+
     /** Translate versionName to versionId, synchronous call. */
     void updateVersionId(@NotNull Project project, String packageName) {
         List<String> credentials;
@@ -119,6 +134,7 @@ class GprMaintenancePlugin implements Plugin<Project> {
         this.userName = credentials.get(0);
         String versionName = project.getVersion().toString();
         String uri = Constants.getPackageVersionsUri(packageType, packageName);
+        if (this.logHttp) {this.stdOut("GET " + uri);}
         try {
             HttpGet request = new HttpGet(new URIBuilder(uri).build());
             request.setHeaders(HttpClientImpl.getRequestHeaders(credentials.get(0), credentials.get(1)));
@@ -244,14 +260,14 @@ class GprMaintenancePlugin implements Plugin<Project> {
     /** The {@link PackageRestoreTask} restores a package. */
     void registerPackageRestoreTask(@NotNull Project project, @NotNull String taskName) {
         TaskContainer tasks = project.getTasks();
-        if (tasks.findByName(taskName) == null) {
+        if (tasks.findByName(taskName) == null && versionId > 0) {
             tasks.register(taskName, PackageRestoreTask.class, task -> {
                 task.setGroup(taskGroup);
                 task.getGroupId().set(groupId);
                 task.getUserName().set(userName);
                 task.getPackageType().set(packageType);
                 task.getPackageName().set(packageName);
-                if (versionId > 0L) {task.getVersionId().set(versionId);}
+                task.getVersionId().set(versionId);
                 task.getLogHttp().set(logHttp);
             });
         }
