@@ -10,9 +10,6 @@ java {
     }
 }
 
-group = "${buildSrc.versions.plugin.group.get()}"
-version = "${buildSrc.versions.plugin.version.get()}"
-
 val pluginId: String by extra(buildSrc.versions.plugin.id.get())
 val pluginCls: String by extra(buildSrc.versions.plugin.cls.get())
 val pluginGroup: String by extra(buildSrc.versions.plugin.group.get())
@@ -23,6 +20,9 @@ val pluginIdentifier: String by extra(buildSrc.versions.plugin.identifier.get())
 val githubHandle: String by extra(buildSrc.versions.github.handle.get())
 val githubEmail: String by extra(buildSrc.versions.github.email.get())
 val githubDev: String by extra(buildSrc.versions.github.dev.get())
+
+group = pluginGroup
+version = pluginVersion
 
 dependencies {
     api(gradleApi())
@@ -92,46 +92,47 @@ artifacts {
     archives(sourcesJar)
 }
 
-configure<PublishingExtension> {
-    repositories {
-        if (System.getenv("GITHUB_ACTOR") != null && System.getenv("GITHUB_TOKEN") != null) {
-            maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/${githubHandle}/${pluginIdentifier}")
-                credentials {
-                    username = System.getenv("GITHUB_ACTOR")
-                    password = System.getenv("GITHUB_TOKEN")
+afterEvaluate {
+    configure<PublishingExtension> {
+        repositories {
+            if (System.getenv("GITHUB_ACTOR") != null && System.getenv("GITHUB_TOKEN") != null) {
+                maven {
+                    name = "GitHubPackages"
+                    url = uri("https://maven.pkg.github.com/${githubHandle}/${pluginIdentifier}")
+                    credentials {
+                        username = System.getenv("GITHUB_ACTOR")
+                        password = System.getenv("GITHUB_TOKEN")
+                    }
                 }
             }
         }
-    }
-    publications {
-        create<MavenPublication>("Plugin") {
-            from(components["java"])
-            groupId = pluginGroup
-            artifactId = pluginIdentifier
-            version = pluginVersion
-
-            pom {
-                name = pluginName
-                description = pluginDesc
-                url = "https://github.com/${githubHandle}/${pluginIdentifier}"
-                licenses {
-                    license {
-                        name = "MIT License"
-                        url = "http://www.opensource.org/licenses/mit-license.php"
+        publications {
+            create<MavenPublication>("Plugin") {
+                from(components["java"])
+                groupId = pluginGroup
+                artifactId = pluginIdentifier
+                version = pluginVersion
+                pom {
+                    name = pluginName
+                    description = pluginDesc
+                    url = "https://github.com/${githubHandle}/${pluginIdentifier}"
+                    licenses {
+                        license {
+                            name = "MIT License"
+                            url = "http://www.opensource.org/licenses/mit-license.php"
+                        }
                     }
-                }
-                scm {
-                    connection = "scm:git:git://github.com/${githubHandle}/${pluginIdentifier}.git"
-                    developerConnection = "scm:git:ssh://github.com/${githubHandle}/${pluginIdentifier}.git"
-                    url = "https://github.com/${githubHandle}/${pluginIdentifier}/"
-                }
-                developers {
-                    developer {
-                        id = githubHandle
-                        email = githubEmail
-                        name = githubDev
+                    scm {
+                        connection = "scm:git:git://github.com/${githubHandle}/${pluginIdentifier}.git"
+                        developerConnection = "scm:git:ssh://github.com/${githubHandle}/${pluginIdentifier}.git"
+                        url = "https://github.com/${githubHandle}/${pluginIdentifier}/"
+                    }
+                    developers {
+                        developer {
+                            id = githubHandle
+                            email = githubEmail
+                            name = githubDev
+                        }
                     }
                 }
             }

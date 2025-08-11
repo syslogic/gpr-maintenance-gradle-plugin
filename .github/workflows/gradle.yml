@@ -46,7 +46,7 @@ jobs:
           GITHUB_ACTOR: ${{ GITHUB.REPOSITORY_OWNER }}
           GITHUB_TOKEN: ${{ SECRETS.GITHUB_TOKEN }}
         run: |
-          ./gradlew --max-workers=2 :publish
+          ./gradlew --max-workers=2 :publishPluginMavenPublicationToGitHubPackagesRepository
           ls -la ./build/libs | grep jar
 
       - name: 📦 Retain Artifacts (JAR)
