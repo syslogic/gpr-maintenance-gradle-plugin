@@ -17,6 +17,10 @@ public class VersionResponse implements Serializable {
     @SerializedName("items")
     private final ArrayList<Version> mItems = new ArrayList<>();
 
+    /**
+     * Getter for the response items.
+     * @return an array-list of {@link Version}.
+     */
     public ArrayList<Version> getItems() {
         return this.mItems;
     }

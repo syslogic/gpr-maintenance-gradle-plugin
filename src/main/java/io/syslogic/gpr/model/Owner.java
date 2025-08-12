@@ -277,13 +277,14 @@ public class Owner implements Serializable {
     }
 
     /**
-     * Setter for name.
+     * Setter for user name.
      * @param value the name of the user.
      */
     public void setName(@NotNull String value) {
         this.name = value;
     }
 
+    /** {@inheritDoc} */
     @NotNull
     public String toString() {
         return this.login;

@@ -19,7 +19,7 @@ plugins {
 
 // Apply plugin to classpath when not running  in `buildSrc`.
 if (! file("../buildSrc").exists()) {
-    pluginManager.apply("io.syslogic.gpr.maintenance")
+    apply(plugin = "io.syslogic.gpr.maintenance")
 }
 
 val pluginId: String by extra(buildSrc.versions.plugin.id.get())

@@ -38,11 +38,9 @@ public class GprMaintenanceExtension implements GprMaintenance {
 
     /** {@inheritDoc} */
     @Override
-    public void setTokenProperties(@NotNull String value) throws FileNotFoundException {
-        if (! new File(value).exists()) {
-            throw new FileNotFoundException("file not found: " + value);
-        } else if (! Credentials.isPlausible(new File(value))) {
-            throw new IllegalArgumentException("file not plausible: " + value);
+    public void setTokenProperties(@NotNull String value) throws IllegalArgumentException {
+        if (! Credentials.isPlausibleFormat(new File(value))) {
+            throw new IllegalArgumentException("file not found or bad format: " + value);
         } else {
             this.tokenProperties = value;
         }
@@ -84,6 +82,7 @@ public class GprMaintenanceExtension implements GprMaintenance {
         this.packageName = value;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setPageSize(Integer value) {
         if (value != null && value >= 0 && value <= 100 ) {
@@ -97,6 +96,7 @@ public class GprMaintenanceExtension implements GprMaintenance {
         return this.packageType;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Integer getPageSize() {
         return this.pageSize;

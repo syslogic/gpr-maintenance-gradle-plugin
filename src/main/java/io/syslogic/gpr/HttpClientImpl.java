@@ -65,7 +65,7 @@ public class HttpClientImpl {
      * PoolingHttpClientConnectionManager is required for subsequent requests.
      * @param kilobytes kilobytes transferred.
      * @param ms the transfer duration.
-     * @return string formatted transfer rate.
+     * @return <code>String</code> formatted transfer rate.
      */
     @NotNull
     @SuppressWarnings("unused")
@@ -77,7 +77,11 @@ public class HttpClientImpl {
         return String.format(Locale.ROOT, "%.1f %cB", rate/1024f, " kMGTPE".charAt(u))+ "/s";
     }
 
-    /** Obtain pagination "next page" link from headers. */
+    /**
+     * Obtain the pagination "next page" link from headers.
+     * @param headers the headers to parse.
+     * @return <code>String</code> next page URL or <code>null</code>.
+     */
     @Nullable
     public static String getNextPage(@NotNull Header[] headers) {
         for (Header header : headers) {

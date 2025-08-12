@@ -89,9 +89,9 @@ public interface GprMaintenance {
      * Define the path to the API client configuration file.
      * <code>gpr {tokenProperties = ""}</code>
      * @param value the absolute path to the <code>token.properties</code> file.
-     * @throws FileNotFoundException then the file cannot be found.
+     * @throws IllegalArgumentException when the file not exists or has a bad format.
      */
-    void setTokenProperties(String value) throws FileNotFoundException;
+    void setTokenProperties(String value) throws IllegalArgumentException;
 
     /**
      * Package GroupId.
