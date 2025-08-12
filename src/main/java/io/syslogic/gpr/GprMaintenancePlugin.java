@@ -168,7 +168,7 @@ class GprMaintenancePlugin implements Plugin<Project> {
     /** Add dependencies to publication tasks. */
     void addTaskDependency(@NotNull Project project, @Nullable String dependsOn, @Nullable String finalizedBy) {
         project.afterEvaluate( it ->
-                it.getTasks().stream().filter(item -> item.getName().matches(Constants.PUBLISH_TASK_PATTERN)).forEach( task -> {
+                it.getTasks().stream().filter(item -> item.getName().matches(Constants.PATTERN_PUBLISH_TASKS)).forEach( task -> {
                     if (dependsOn != null) {
                         // stdOut(":" + task.getName() + " depends on :" + dependsOn);
                         task.dependsOn(dependsOn);

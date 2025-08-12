@@ -29,6 +29,10 @@ import io.syslogic.gpr.response.VersionResponse;
  */
 abstract public class PackageListTask extends BasePackageTask {
 
+    @NotNull Integer currentPage = 1;
+
+    ArrayList<Package> mItems = new ArrayList<>();
+
     /**
      * API Page Size
      * @return the integer page-size
@@ -36,10 +40,6 @@ abstract public class PackageListTask extends BasePackageTask {
     @Input
     @Optional
     public abstract Property<Integer> getPageSize();
-
-    @NotNull Integer currentPage = 1;
-
-    ArrayList<Package> mItems = new ArrayList<>();
 
     /** The default {@link TaskAction}. */
     @TaskAction

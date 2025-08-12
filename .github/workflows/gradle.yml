@@ -1,6 +1,7 @@
 name: Gradle CI
 
 on:
+  workflow_dispatch:
   push:
     paths-ignore:
       - '**/README.md'

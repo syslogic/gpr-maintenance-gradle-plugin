@@ -65,7 +65,7 @@ plugins {
 
 ### Configuration
 
-The credentials are either being picked up from file `token.properties` (format: `username token`).
+The credentials are either being picked up from file `token.properties` (format: `username token`).<br/>
 When running in GitHub workflow, one has to declare these environmental variables, which are being picked up instead.  
 
 ````yaml
@@ -83,8 +83,8 @@ The [`GprMaintenanceExtension`](https://github.com/syslogic/gpr-maintenance-grad
 | Property                    | Description                                                                                                                                      | Type      | Default       |
 |-----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|-----------|---------------|
 | `packageType`               | The package-type to query; any of: `npm`, `maven`, `rubygems`, `docker`, `nuget`, `container`.                                                   | `String`  | `maven`       |
-| `groupId`                   | The group-name of the package to look up (project value override).                                                                               | `String`  | project group |
-| `packageName`               | The package-name of the package to look up (project value override).                                                                             | `String`  | project name  |
+| `groupId`                   | The group of the package to look up.                                                                                                             | `String`  | project group |
+| `packageName`               | The name of the package to look up. That's often the only config required.                                                                       | `String`  | project name  |
 | `tokenProperties`           | The absolute path to file `token.properties`, containing following format: `<username> <token>`. Valid string-separators are: ` `, `\|` and `/`. | `String`  | `null`        |
 | `deleteOnConflict`          | Delete conflicting package version upon publish.                                                                                                 | `Boolean` | `false`       |
 | `deleteLastVersion`         | Delete the whole package, when attempting to delete the last version.                                                                            | `Boolean` | `false`       |

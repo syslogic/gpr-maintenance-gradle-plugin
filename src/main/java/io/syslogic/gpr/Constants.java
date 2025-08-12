@@ -27,7 +27,7 @@ public class Constants {
      * @param packageType the type of package.
      * @param pageSize page size.
      * @param page page number.
-     * @return <code>user/packages?package_type={PACKAGE_TYPE}&per_page={PAGE_SIZE}&page={PAGE}</code>
+     * @return URI <code>user/packages?package_type={PACKAGE_TYPE}&amp;per_page={PAGE_SIZE}&amp;page={PAGE}</code>
      */
     @NotNull
     public static String getPackageIndexUri(@NotNull String packageType, @NotNull Integer pageSize, @NotNull Integer page) {
@@ -82,11 +82,14 @@ public class Constants {
         return Constants.USER_PACKAGES + "/" + packageType + "/" + packageName ;
     }
 
+    /** The regex pattern used to check the <code>token.properties</code> file. */
+    @NotNull public static final String PATTERN_TOKEN_FORMAT = "^(.*)[\\s\\|/](.*)$";
+
     /** The regex pattern used to determine the generated publishing tasks. */
-    @NotNull public static final String PUBLISH_TASK_PATTERN = "^publish(?!AllPublications).*(?<!MavenLocal|publish)$";
+    @NotNull public static final String PATTERN_PUBLISH_TASKS = "^publish(?!AllPublications).*(?<!MavenLocal|publish)$";
 
     /** The extension name to register. */
-    @NotNull public static final String EXTENSION_NAME = "gpr";
+    @NotNull public static final String EXTENSION_NAME       = "gpr";
 
     /** Task name: ID. */
     @NotNull public static final String VERSION_ID_TASK      = "gprVersionId";
