@@ -13,10 +13,10 @@ plugin_version           = "1.0.9"
 gpr_maintenance          = "1.0.8"
 
 annotations             = "26.0.2-1"
-http_client             = "5.5"
+http_client             = "5.5.1"
 http_core               = "5.3.6"
 gson                    = "2.13.2"
-junit                   = "5.13.4" # "6.0.0-M2"
+junit                   = "6.0.0"
 
 [plugins]
 gradle_plugin           = { id = "org.gradle.java-gradle-plugin" }
