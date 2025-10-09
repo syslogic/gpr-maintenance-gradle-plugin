@@ -26,6 +26,6 @@ dependencyResolutionManagement {
 
 // The root project name only should be set when building in `buildSrc` ...
 // else this will lead to a doubled-up package name, when publishing it.
-if (file("../buildSrc").exists()) {
+if (file("../buildSrc").exists() || file("../build-logic").exists()) {
     rootProject.name = "gpr-maintenance-gradle-plugin"
 }

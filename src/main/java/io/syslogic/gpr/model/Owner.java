@@ -14,96 +14,127 @@ import java.util.Date;
 @SuppressWarnings("unused")
 public class Owner implements Serializable {
 
+    /** Login name */
     @SerializedName("login")
     private String login;
 
+    /** ID */
     @SerializedName("id")
     private long id;
 
+    /** NodeID */
     @SerializedName("node_id")
     private String nodeId;
 
+    /** Avatar URL */
     @SerializedName("avatar_url")
     private String avatarUrl;
 
+    /** Gravatar ID */
     @SerializedName("gravatar_id")
     private String gravatarId;
 
+    /** User URL */
     @SerializedName("url")
     private String url;
 
+    /** User HTML URL */
     @SerializedName("html_url")
     private String htmlUrl;
 
+    /** User followers URL */
     @SerializedName("followers_url")
     private String followersUrl;
 
+    /** User following URL */
     @SerializedName("following_url")
     private String followingUrl;
 
+    /** User gists URL */
     @SerializedName("gists_url")
     private String gistsUrl;
 
+    /** User starred URL */
     @SerializedName("starred_url")
     private String starredUrl;
 
+    /** User Subscriptions URL */
     @SerializedName("subscriptions_url")
     private String subscriptionsUrl;
 
+    /** User organizations URL */
     @SerializedName("organizations_url")
     private String organizationsUrl;
 
+    /** User repositories URL */
     @SerializedName("repos_url")
     private String reposUrl;
 
+    /** User events URL */
     @SerializedName("events_url")
     private String eventsUrl;
 
+    /** User received events URL */
     @SerializedName("received_events_url")
     private String receiverEventsUrl;
 
+    /** The user's type. */
     @SerializedName("type")
     private String type;
 
+    /** If the user is site admin. */
     @SerializedName("site_admin")
     private Boolean siteAdmin;
 
+    /** The user's name. */
     @SerializedName("name")
     private String name;
 
+    /** The user's company. */
     @SerializedName("company")
     private String company;
 
+    /** The user's blog. */
     @SerializedName("blog")
     private String blog;
 
+    /** The user's location. */
     @SerializedName("location")
     private String location;
 
+    /** The user's email. */
     @SerializedName("email")
     private String email;
 
+    /** If the user is hire-able. */
     @SerializedName("hireable")
     private Boolean hireable;
 
+    /** The user's bio. */
     @SerializedName("bio")
     private String bio;
 
+    /** The number of public repositories. */
     @SerializedName("public_repos")
     private Integer publicRepos;
 
+    /** The number of public gists. */
     @SerializedName("public_gists")
     private Integer publicGists;
 
+    /** The number of follower accounts. */
     @SerializedName("followers")
     private Integer followers;
 
+    /** The number of following accounts. */
     @SerializedName("following")
     private Integer following;
 
+    /** Date account created at. */
     @SerializedName("created_at")
     private Date createdAt;
 
+    /** Date account last updated at. */
     @SerializedName("updated_at")
     private Date updatedAt;
 

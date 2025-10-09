@@ -1,22 +1,32 @@
 [versions]
+#noinspection UnusedVersionCatalogEntry
 plugin_group            = "io.syslogic"
+#noinspection UnusedVersionCatalogEntry
 plugin_name             = "GPR Maintenance Plugin"
+#noinspection UnusedVersionCatalogEntry
 plugin_desc             = "It manages GPR Packages through GitHub API"
+#noinspection UnusedVersionCatalogEntry
 plugin_cls              = "io.syslogic.gpr.GprMaintenancePlugin"
+#noinspection UnusedVersionCatalogEntry
 plugin_identifier       = "gpr-maintenance-gradle-plugin"
+#noinspection UnusedVersionCatalogEntry
 plugin_id               = "io.syslogic.gpr.maintenance"
+#noinspection UnusedVersionCatalogEntry
 github_email            = "syslogic@users.noreply.github.com"
+#noinspection UnusedVersionCatalogEntry
 github_dev              = "Martin Zeitler"
+#noinspection UnusedVersionCatalogEntry
 github_handle           = "syslogic"
 
-plugin_version           = "1.0.9"
-gpr_maintenance          = "1.0.8"
+#noinspection UnusedVersionCatalogEntry
+plugin_version          = "1.0.9"
+gpr_maintenance         = "1.0.8"
 
-annotations             = "26.0.2-1"
-http_client             = "5.5.1"
-http_core               = "5.3.6"
+annotations             = "26.1.0"
+http_client             = "5.6"
+http_core               = "5.4.1"
 gson                    = "2.13.2"
-junit                   = "6.0.0"
+junit                   = "6.0.3"
 
 [plugins]
 gradle_plugin           = { id = "org.gradle.java-gradle-plugin" }
@@ -30,6 +40,7 @@ http_client             = { module = "org.apache.httpcomponents.client5:httpclie
 http_core               = { module = "org.apache.httpcomponents.core5:httpcore5", version.ref = "http_core" }
 annotations             = { module = "org.jetbrains:annotations", version.ref = "annotations" }
 gson                    = { module = "com.google.code.gson:gson", version.ref = "gson" }
+
 junit_bom               = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit_platform_launcher = { module = "org.junit.platform:junit-platform-launcher" }
 junit_vintage_engine    = { module = "org.junit.vintage:junit-vintage-engine" }
@@ -40,4 +51,4 @@ junit_jupiter           = { module = "org.junit.jupiter:junit-jupiter" }
 [bundles]
 junit_runtime           = [ "junit_platform_launcher", "junit_vintage_engine", "junit_jupiter_engine" ]
 junit_jupiter           = [ "junit_jupiter", "junit_jupiter_api" ]
-http_client             = [ "http_core", "http_client" ]
+httpcomponents          = [ "http_core", "http_client" ]

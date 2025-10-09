@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
         // Add the plugin to classpath when not building in `buildSrc`.
-        if (! file("../buildSrc").exists()) {
+        if (! file("../buildSrc").exists() && ! file("../build-logic").exists()) {
             classpath(buildSrc.gpr.maintenance)
         }
     }
@@ -18,7 +18,7 @@ plugins {
 }
 
 // Apply plugin to classpath when not running  in `buildSrc`.
-if (! file("../buildSrc").exists()) {
+if (! file("../buildSrc").exists() && ! file("../build-logic").exists()) {
     apply(plugin = "io.syslogic.gpr.maintenance")
 }
 
@@ -44,7 +44,7 @@ java {
 
 dependencies {
     api(gradleApi())
-    implementation(buildSrc.bundles.http.client)
+    implementation(buildSrc.bundles.httpcomponents)
     implementation(buildSrc.annotations)
     implementation(buildSrc.gson)
 
@@ -109,10 +109,8 @@ val sourcesJar by tasks.registering(Jar::class) {
     archiveClassifier.set("sources")
 }
 
-artifacts {
-    archives(javadocJar)
-    archives(sourcesJar)
-}
+tasks.getByName("assemble")
+    .dependsOn(javadocJar, javadocJar)
 
 afterEvaluate {
     configure<PublishingExtension> {
@@ -147,7 +145,7 @@ afterEvaluate {
                     scm {
                         connection = "scm:git:git://github.com/${githubHandle}/${pluginIdentifier}.git"
                         developerConnection = "scm:git:ssh://github.com/${githubHandle}/${pluginIdentifier}.git"
-                        url = "https://github.com/${githubHandle}/${pluginIdentifier}/"
+                        url = "https://github.com/${githubHandle}/${pluginIdentifier}"
                     }
                     developers {
                         developer {
