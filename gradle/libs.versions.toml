@@ -30,6 +30,7 @@ http_client             = { module = "org.apache.httpcomponents.client5:httpclie
 http_core               = { module = "org.apache.httpcomponents.core5:httpcore5", version.ref = "http_core" }
 annotations             = { module = "org.jetbrains:annotations", version.ref = "annotations" }
 gson                    = { module = "com.google.code.gson:gson", version.ref = "gson" }
+
 junit_bom               = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit_platform_launcher = { module = "org.junit.platform:junit-platform-launcher" }
 junit_vintage_engine    = { module = "org.junit.vintage:junit-vintage-engine" }
