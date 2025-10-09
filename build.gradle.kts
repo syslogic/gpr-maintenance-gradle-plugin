@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
         // Add the plugin to classpath when not building in `buildSrc`.
-        if (! file("../buildSrc").exists()) {
+        if (! file("../build-logic").exists()) {
             classpath(buildSrc.gpr.maintenance)
         }
     }
@@ -44,7 +44,7 @@ java {
 
 dependencies {
     api(gradleApi())
-    implementation(buildSrc.bundles.http.client)
+    implementation(buildSrc.bundles.httpcomponents)
     implementation(buildSrc.annotations)
     implementation(buildSrc.gson)
 

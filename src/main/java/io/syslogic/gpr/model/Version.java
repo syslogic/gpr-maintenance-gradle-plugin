@@ -12,30 +12,39 @@ import java.util.Date;
 @SuppressWarnings("unused")
 public class Version implements Serializable {
 
+    /** ID */
     @SerializedName("id")
     private long id;
 
+    /** Name */
     @SerializedName("name")
     private String name;
 
+    /** License */
     @SerializedName("license")
     private String license;
 
+    /** URL */
     @SerializedName("url")
     private String url;
 
+    /** HTML URL */
     @SerializedName("html_url")
     private String htmlUrl;
 
+    /** Package HTML URL */
     @SerializedName("package_html_url")
     private String packageHtmlUrl;
 
+    /** Date created at */
     @SerializedName("created_at")
     private Date createdAt;
 
+    /** Date last updated at */
     @SerializedName("updated_at")
     private Date updatedAt;
 
+    /** Meta-data */
     @SerializedName("metadata")
     private MetaData metadata;
 
