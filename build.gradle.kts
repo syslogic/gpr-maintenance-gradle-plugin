@@ -90,16 +90,20 @@ val implCls: Configuration by configurations.creating {
 val javadocs by tasks.registering(Javadoc::class) {
     title = "$pluginName $version API"
     classpath += implCls.asFileTree.filter {it.extension == "jar"}
-    destinationDir = rootProject.file("build/javadoc")
+    destinationDir = project.file("build/javadoc")
     source = sourceSets.main.get().allJava
-    // options.links = "https://docs.oracle.com/en/java/javase/17/docs/api/"
-    // options.linkSource = true
-    // options.author = true
     isFailOnError = false
+    options {
+        this as StandardJavadocDocletOptions
+        outputLevel = JavadocOutputLevel.VERBOSE
+        links("https://docs.oracle.com/en/java/javase/17/docs/api")
+        linkSource(false)
+        author(true)
+    }
 }
 
 val javadocJar by tasks.registering(Jar::class) {
-    from(rootProject.file("build/javadoc"))
+    from(project.file("build/javadoc"))
     archiveClassifier.set("javadoc")
     dependsOn(javadocs)
 }
@@ -109,8 +113,7 @@ val sourcesJar by tasks.registering(Jar::class) {
     archiveClassifier.set("sources")
 }
 
-tasks.getByName("assemble")
-    .dependsOn(javadocJar, javadocJar)
+tasks.getByName("assemble").dependsOn(javadocJar)
 
 afterEvaluate {
     configure<PublishingExtension> {
